@@ -205,6 +205,9 @@ __marimo__/
 # VS Code workspace file
 *.code-workspace
 
+# VS Code project settings dir
+.vscode
+
 # DevDB database config file 
 .devdbrc
 
