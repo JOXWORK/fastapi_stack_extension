@@ -1,0 +1,55 @@
+services:
+  app:
+    build:
+      dockerfile: ./docker-build/Dockerfile
+      context: ./
+    environment:
+      APPLICATION__DB__URL: postgresql+asyncpg://user:password@pg:5432/fastapi_application
+    depends_on:
+      pg:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./application
+          target: /application
+        - action: rebuild
+          path: ./poetry.lock
+
+  pg:
+    image: postgres:17.6
+    restart: always
+    shm_size: 128mb
+    environment:
+      POSTGRES_DB: fastapi_application
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "user", "-d", "fastapi_application"]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  pgadmin:
+    image: elestio/pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_LISTEN_PORT: 8080
+    depends_on:
+      pg:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - ./servers.json:/pgadmin4/servers.json
+
+volumes:
+  pgdata:
