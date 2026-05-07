@@ -17,6 +17,9 @@ services:
           target: /application
         - action: rebuild
           path: ./poetry.lock
+        - action: rebuild
+          path: ./pyproject.toml
+
 
   pg:
     image: postgres:17.6
