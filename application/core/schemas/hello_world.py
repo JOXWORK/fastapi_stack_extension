@@ -1,6 +1,5 @@
 from pydantic import BaseModel, field_validator, model_validator
 from pydantic_core import PydanticCustomError
-
 from typing_extensions import Self
 
 

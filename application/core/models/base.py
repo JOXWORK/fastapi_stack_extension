@@ -1,12 +1,12 @@
+from sqlalchemy import MetaData
 from sqlalchemy.orm import (
     DeclarativeBase,
     declared_attr,
 )
-from sqlalchemy import MetaData
-from core.models.mixins import BaseIntIdPkMixin
-
 from utils.case_transform import transform
+
 from core.config import settings
+from core.models.mixins import BaseIntIdPkMixin
 
 
 class Base(DeclarativeBase, BaseIntIdPkMixin):

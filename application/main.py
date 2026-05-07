@@ -1,14 +1,11 @@
-import uvicorn
-from fastapi import FastAPI
-from fastapi.responses import ORJSONResponse
-
 from contextlib import asynccontextmanager
 
+import uvicorn
 from api import router as api_router
 from core.config import settings
 from core.models import db_attach
-
-from core.models import db_attach
+from fastapi import FastAPI
+from fastapi.responses import ORJSONResponse
 
 
 @asynccontextmanager

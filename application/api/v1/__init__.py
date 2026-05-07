@@ -1,8 +1,7 @@
-from fastapi import APIRouter
 from core.config import settings
+from fastapi import APIRouter
 
 from .hello_world.views import router as hello_world_router
-
 
 router = APIRouter(prefix=settings.api.prefix.v1.router)
 router.include_router(

@@ -5,14 +5,12 @@ Update
 Delete
 """
 
+from os import remove as file_remove
 from random import choice
 from string import ascii_letters, digits
-from os import remove as file_remove
-
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import Example
-from core.models import db_attach
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 def create_file(path: str, content: str) -> bool:

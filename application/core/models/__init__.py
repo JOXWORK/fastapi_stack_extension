@@ -4,7 +4,6 @@ __all__ = (
     "Example",
 )
 
-from .db_attach import db_attach
 from .base import Base
-
+from .db_attach import db_attach
 from .example import Example
