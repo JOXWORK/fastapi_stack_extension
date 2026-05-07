@@ -213,3 +213,6 @@ __marimo__/
 
 # .DS_Store macOS finders file
 .DS_Store
+
+# Dev-test stuff
+.stuff
