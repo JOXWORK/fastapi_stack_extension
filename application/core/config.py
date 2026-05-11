@@ -54,6 +54,11 @@ class DBSettings(BaseModel):
     }
 
 
+class RedisSettings(BaseModel):
+    url: str
+    ttl: int = 60
+
+
 class Settings(BaseSettings):
     ROOT_DIR: Path = ROOT_DIR
 
@@ -73,6 +78,8 @@ class Settings(BaseSettings):
     host: HostSettings
 
     db: DBSettings
+
+    redis: RedisSettings
 
 
 ## Допустимо передовать в env_file кортеж из нескольких .env файлов, перегружающих друг друга и значения конфига.
