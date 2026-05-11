@@ -1,5 +1,6 @@
 services:
   app:
+    restart: always
     build:
       dockerfile: ./docker-build/Dockerfile
       context: ./
@@ -53,6 +54,15 @@ services:
       - "127.0.0.1:8080:8080"
     volumes:
       - ./servers.json:/pgadmin4/servers.json
+
+  redis:
+    image: redis:8.6.3-trixie
+    restart: always
+    depends_on:
+      pg:
+        condition: service_healthy
+    ports:
+    - "6379:6379"
 
 volumes:
   pgdata:
