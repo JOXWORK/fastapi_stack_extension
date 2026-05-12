@@ -56,7 +56,7 @@ class DBSettings(BaseModel):
 
 class RedisSettings(BaseModel):
     url: str
-    ttl: int = 60
+    ttl: int
 
 
 class Settings(BaseSettings):
