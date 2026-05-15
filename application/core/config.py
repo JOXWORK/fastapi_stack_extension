@@ -54,6 +54,15 @@ class DBSettings(BaseModel):
     }
 
 
+class RedisConfig(BaseModel):
+    url: str
+    ttl: int
+
+
+class RedisDB(BaseModel):
+    cache: RedisConfig
+
+
 class Settings(BaseSettings):
     ROOT_DIR: Path = ROOT_DIR
 
@@ -74,9 +83,13 @@ class Settings(BaseSettings):
 
     db: DBSettings
 
+    redis: RedisDB
+
 
 ## Допустимо передовать в env_file кортеж из нескольких .env файлов, перегружающих друг друга и значения конфига.
 ## Например, env_file=(".env", ".env.template"). В .env указывается secrets информация, перегружая информацию из .env.template.
 ## Такой подход удобен для загрузки файлов конфига в репозиторий, не раскрывая secrets информацию.
 
 settings = Settings()
+
+print(settings.redis)
