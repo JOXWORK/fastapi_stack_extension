@@ -18,6 +18,7 @@ class HostSettings(BaseModel):
 class ApiV1Prefix(BaseModel):
     router: str = "/v1"
     hello_world: str = "/hello_world"
+    redis_cache_native: str = "/redis-cache-native"
 
 
 class ApiPrefix(BaseModel):
@@ -27,6 +28,7 @@ class ApiPrefix(BaseModel):
 
 class ApiV1Tags(BaseModel):
     hello_world: list[str] = ["Test routes"]
+    redis_cache_native: list[str] = ["Redis cache native"]
 
 
 class ApiV1Summary(BaseModel):
