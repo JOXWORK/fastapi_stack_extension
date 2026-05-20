@@ -61,6 +61,21 @@ class RedisConfig(BaseModel):
 
 class RedisDB(BaseModel):
     cache: RedisConfig
+    taskiq: RedisConfig
+
+
+class TaskiqBroker(BaseModel):
+    maxlen: int = 10_000
+    approximate: bool = True
+
+
+class TaskiqResultBackend(BaseModel):
+    result_ex_time: int = 60
+
+
+class TaskiqConfig(BaseModel):
+    broker: TaskiqBroker = TaskiqBroker()
+    result_backend: TaskiqResultBackend = TaskiqResultBackend()
 
 
 class Settings(BaseSettings):
@@ -84,6 +99,8 @@ class Settings(BaseSettings):
     db: DBSettings
 
     redis: RedisDB
+
+    taskiq: TaskiqConfig = TaskiqConfig()
 
 
 ## Допустимо передовать в env_file кортеж из нескольких .env файлов, перегружающих друг друга и значения конфига.
