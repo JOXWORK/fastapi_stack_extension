@@ -4,6 +4,7 @@ services:
     build:
       dockerfile: ./docker-build/Dockerfile
       context: ./
+      target: app
     environment:
       APPLICATION__DB__URL: postgresql+asyncpg://user:password@pg:5432/fastapi_application
     depends_on:
@@ -20,6 +21,19 @@ services:
           path: ./poetry.lock
         - action: rebuild
           path: ./pyproject.toml
+
+
+  worker:
+    build:
+      dockerfile: ./docker-build/Dockerfile
+      context: ./
+      target: worker
+    command: taskiq worker core.taskiq.broker:broker core.tasks
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./application/core/tasks
+          target: /application/core/tasks
 
 
   pg:
