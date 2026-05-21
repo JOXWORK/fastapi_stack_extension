@@ -108,5 +108,3 @@ class Settings(BaseSettings):
 ## Такой подход удобен для загрузки файлов конфига в репозиторий, не раскрывая secrets информацию.
 
 settings = Settings()
-
-print(settings.redis)
