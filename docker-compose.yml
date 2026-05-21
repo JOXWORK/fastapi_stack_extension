@@ -34,6 +34,9 @@ services:
         - action: sync+restart
           path: ./application/core/tasks
           target: /application/core/tasks
+        - action: sync+restart
+          path: ./application/core/taskiq
+          target: /application/core/taskiq
 
 
   pg:
