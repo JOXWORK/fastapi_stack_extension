@@ -24,11 +24,16 @@ services:
 
 
   worker:
+    restart: always
     build:
       dockerfile: ./docker-build/Dockerfile
       context: ./
       target: worker
+    depends_on:
+      - redis
+      - pg
     command: taskiq worker core.taskiq.broker:broker core.tasks
+    scale: 3
     develop:
       watch:
         - action: sync+restart
