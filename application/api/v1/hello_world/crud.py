@@ -10,7 +10,9 @@ from random import choice
 from string import ascii_letters, digits
 
 from core.models import Example
+from core.tasks import for_loop_task_example_task
 from sqlalchemy.ext.asyncio import AsyncSession
+from taskiq.result.result import TaskiqResult
 
 
 def create_file(path: str, content: str) -> bool:
@@ -55,3 +57,10 @@ async def get_row_example(id: int, session: AsyncSession):
         entity=Example,
         ident=id,
     )
+
+
+async def for_loop_task_example(stop: int) -> TaskiqResult:
+    task = await for_loop_task_example_task.kiq(stop)
+    result = await task.wait_result()
+
+    return result
