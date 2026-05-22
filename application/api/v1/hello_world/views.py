@@ -13,6 +13,7 @@ from .crud import (
     delete_file,
     for_loop_task_example,
     get_row_example,
+    httpbin_get_request,
     read_file,
     update_file,
 )
@@ -64,7 +65,7 @@ def delete_file_route(path: str = Depends(check_file_exists)) -> dict:
 
 
 @router.post("/hello_world_foo")
-def hello_world_foo_router(hello_world: HelloWorldSchema):
+def hello_world_foo_router(hello_world: HelloWorldSchema) -> dict[str, bool]:
     return {"successful": True}
 
 
@@ -72,7 +73,7 @@ def hello_world_foo_router(hello_world: HelloWorldSchema):
 async def create_db_row_route(
     random_string_generation: bool = False,
     session: AsyncSession = Depends(db_attach.new_session),
-):
+) -> dict[str, bool]:
     await create_row_example(
         random_string_generation=random_string_generation,
         session=session,
@@ -94,3 +95,8 @@ async def get_db_row_example_route(
 @router.post("/for-loop-task-example")
 async def for_loop_task_example_route(stop: int) -> TaskiqResult:
     return await for_loop_task_example(stop=stop)
+
+
+@router.get("/httpbin-get-request")
+async def httpbin_get_request_route() -> str:
+    return await httpbin_get_request()
