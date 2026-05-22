@@ -6,10 +6,12 @@ from fastapi import (
     Depends,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
+from taskiq.result.result import TaskiqResult
 
 from .crud import (
     create_row_example,
     delete_file,
+    for_loop_task_example,
     get_row_example,
     read_file,
     update_file,
@@ -79,7 +81,7 @@ async def create_db_row_route(
 
 
 @router.get("/get-an-db-row-example")
-async def get_db_row_example(
+async def get_db_row_example_route(
     id: int,
     session: AsyncSession = Depends(db_attach.new_session),
 ):
@@ -87,3 +89,8 @@ async def get_db_row_example(
         id=id,
         session=session,
     )
+
+
+@router.post("/for-loop-task-example")
+async def for_loop_task_example_route(stop: int) -> TaskiqResult:
+    return await for_loop_task_example(stop=stop)
