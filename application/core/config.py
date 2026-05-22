@@ -70,7 +70,7 @@ class TaskiqBroker(BaseModel):
 
 
 class TaskiqResultBackend(BaseModel):
-    result_ex_time: int = 60
+    result_ex_time: int = 3600  # sec
 
 
 class TaskiqConfig(BaseModel):
