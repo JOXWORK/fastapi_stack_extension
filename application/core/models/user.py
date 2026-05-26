@@ -9,7 +9,7 @@ from core.types_own.user_id import UserIdType
 
 class User(
     Base,
-    BaseIntIdPkMixin,
     SQLAlchemyBaseUserTable[UserIdType],
+    BaseIntIdPkMixin,
 ):
     name: Mapped[str | None] = mapped_column(String(50))
