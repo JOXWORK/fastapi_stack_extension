@@ -14,7 +14,8 @@ services:
       - "8000:8000"
     develop:
       watch:
-        - action: sync+restart
+        # - action: sync+restart
+        - action: sync
           path: ./application
           target: /application
         - action: rebuild
@@ -33,7 +34,7 @@ services:
       - redis
       - pg
     command: taskiq worker core.taskiq.broker:broker core.tasks
-    scale: 3
+    scale: 1
     develop:
       watch:
         - action: sync+restart
