@@ -19,7 +19,8 @@ dependencies = [
     "redis (>=7.4.0,<8.0.0)",
     "taskiq (>=0.12.4,<0.13.0)",
     "taskiq-redis (>=1.2.2,<2.0.0)",
-    "httpx (>=0.28.1,<0.29.0)"
+    "httpx (>=0.28.1,<0.29.0)",
+    "fastapi-users[sqlalchemy] (>=15.0.5,<16.0.0)"
 ]
 
 
