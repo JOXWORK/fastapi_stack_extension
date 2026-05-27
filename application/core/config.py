@@ -78,6 +78,17 @@ class TaskiqConfig(BaseModel):
     result_backend: TaskiqResultBackend = TaskiqResultBackend()
 
 
+class AccessToken(BaseModel):
+    lifetime_seconds: int = 3600
+
+    reset_password_token_secret: str
+    verification_token_secret: str
+
+
+class AuthSettings(BaseModel):
+    access_token: AccessToken
+
+
 class Settings(BaseSettings):
     ROOT_DIR: Path = ROOT_DIR
 
@@ -101,6 +112,8 @@ class Settings(BaseSettings):
     redis: RedisDB
 
     taskiq: TaskiqConfig = TaskiqConfig()
+
+    auth: AuthSettings
 
 
 ## Допустимо передовать в env_file кортеж из нескольких .env файлов, перегружающих друг друга и значения конфига.
