@@ -9,4 +9,7 @@ from .access_token import AccessToken
 async def get_access_token_db(
     session: AsyncSession = Depends(db_attach.new_session),
 ):
-    yield SQLAlchemyAccessTokenDatabase(session, AccessToken)
+    yield SQLAlchemyAccessTokenDatabase(
+        session=session,
+        access_token_table=AccessToken,
+    )

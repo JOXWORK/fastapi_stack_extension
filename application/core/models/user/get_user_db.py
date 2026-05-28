@@ -7,4 +7,7 @@ from .user import User
 
 
 async def get_user_db(session: AsyncSession = Depends(db_attach.new_session)):
-    yield SQLAlchemyUserDatabase(session, User)
+    yield SQLAlchemyUserDatabase(
+        session=session,
+        user_table=User,
+    )
