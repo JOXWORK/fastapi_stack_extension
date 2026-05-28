@@ -23,10 +23,10 @@ from .dependencies import (
     create_file_depends,
 )
 
-router = APIRouter(prefix=settings.api.prefix.v1.hello_world)
+router = APIRouter(prefix=settings.api.v1.prefix.hello_world)
 
 
-@router.get("/", summary=settings.api.summary.hello_world)
+@router.get("/", summary=settings.api.v1.summary.hello_world)
 def root() -> str:
     return "Hello World!"
 

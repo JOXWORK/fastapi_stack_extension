@@ -16,27 +16,29 @@ class HostSettings(BaseModel):
 
 
 class ApiV1Prefix(BaseModel):
+    main_router: str = "/api"
     router: str = "/v1"
     hello_world: str = "/hello_world"
-
-
-class ApiPrefix(BaseModel):
-    main_router: str = "/api"
-    v1: ApiV1Prefix = ApiV1Prefix()
+    auth: str = "ABBAB"
 
 
 class ApiV1Tags(BaseModel):
     hello_world: list[str] = ["Test routes"]
+    auth: str = "auth"
 
 
 class ApiV1Summary(BaseModel):
     hello_world: str = "This is a test router, take an order"
 
 
-class ApiCustoms(BaseModel):
-    prefix: ApiPrefix = ApiPrefix()
+class ApiV1Subs(BaseModel):
+    prefix: ApiV1Prefix = ApiV1Prefix()
     tags: ApiV1Tags = ApiV1Tags()
     summary: ApiV1Summary = ApiV1Summary()
+
+
+class ApiCustoms(BaseModel):
+    v1: ApiV1Subs = ApiV1Subs()
 
 
 class DBSettings(BaseModel):
