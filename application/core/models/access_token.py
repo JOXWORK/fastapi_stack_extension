@@ -13,7 +13,7 @@ from core.types_own.user_id import UserIdType
 from .base import Base
 
 
-class AccessToken(SQLAlchemyBaseAccessTokenTable[UserIdType], Base):
+class AccessToken(Base, SQLAlchemyBaseAccessTokenTable[UserIdType]):
     token: Mapped[str] = mapped_column(
         String(length=43),
         primary_key=True,
