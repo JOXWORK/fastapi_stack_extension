@@ -1,9 +1,9 @@
-from core.authentication import get_user_manager
 from core.models import User
 from core.types_own.user_id import UserIdType
 from fastapi_users import FastAPIUsers
 
 from .backend import auth_backend
+from .get_user_manager import get_user_manager
 
 fastapi_users = FastAPIUsers[User, UserIdType](
     get_user_manager=get_user_manager,

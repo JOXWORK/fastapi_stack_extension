@@ -1,7 +1,9 @@
 from core.config import settings
-from core.models import AccessToken, get_access_token_db
+from core.models import AccessToken
 from fastapi import Depends
 from fastapi_users.authentication.strategy.db import AccessTokenDatabase, DatabaseStrategy
+
+from .get_access_token_db import get_access_token_db
 
 
 def get_database_strategy(
