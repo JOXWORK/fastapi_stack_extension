@@ -6,10 +6,9 @@ from sqlalchemy.orm import (
 from utils.case_transform import transform
 
 from core.config import settings
-from core.models.mixins import BaseIntIdPkMixin
 
 
-class Base(DeclarativeBase, BaseIntIdPkMixin):
+class Base(DeclarativeBase):
     __abstract__ = True
 
     metadata = MetaData(naming_convention=settings.db.naming_convention)
