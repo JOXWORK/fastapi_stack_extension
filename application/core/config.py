@@ -48,11 +48,11 @@ class DBSettings(BaseModel):
     pool_size: int = 50
     max_overflow: int = 20
     naming_convention: dict[str, str] = {
-        "ix": "ix_%(column_0_label)s",
-        "uq": "uq_%(table_name)s_%(column_0_N_name)s",
-        "ck": "ck_%(table_name)s_%(constraint_name)s",
-        "fk": "fk_%(table_name)s:%(column_0_name)s__%(referred_table_name)s:%(referred_column_0_name)s",
-        "pk": "pk_%(table_name)s_%(column_0_name)s",
+        "ix": "ix_%(table_name)s__%(column_0_N_name)s",
+        "uq": "uq_%(table_name)s__%(column_0_N_name)s",
+        "ck": "ck_%(table_name)s__%(constraint_name)s",
+        "fk": "fk_%(table_name)s__%(column_0_N_name)s__%(referred_table_name)s__%(referred_column_0_N_name)s",
+        "pk": "pk_%(table_name)s__%(column_0_N_name)s",
     }
 
 
