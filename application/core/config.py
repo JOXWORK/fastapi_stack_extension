@@ -16,9 +16,9 @@ class HostSettings(BaseModel):
 
 
 class ApiV1Prefix(BaseModel):
-    router: str = "/v1"
+    router_v1: str = "/v1"
     hello_world: str = "/hello_world"
-    auth: str = "ABBAB"
+    auth: str = "/auth"
 
 
 class ApiV1Tags(BaseModel):
