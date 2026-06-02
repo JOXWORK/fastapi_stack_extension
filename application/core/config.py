@@ -16,7 +16,6 @@ class HostSettings(BaseModel):
 
 
 class ApiV1Prefix(BaseModel):
-    main_router: str = "/api"
     router: str = "/v1"
     hello_world: str = "/hello_world"
     auth: str = "ABBAB"
@@ -37,8 +36,13 @@ class ApiV1Subs(BaseModel):
     summary: ApiV1Summary = ApiV1Summary()
 
 
+class ApiMainRouterSettings(BaseModel):
+    prefix: str = "/api"
+
+
 class ApiCustoms(BaseModel):
     v1: ApiV1Subs = ApiV1Subs()
+    main_router: ApiMainRouterSettings = ApiMainRouterSettings()
 
 
 class DBSettings(BaseModel):
