@@ -15,15 +15,32 @@ class HostSettings(BaseModel):
     uvc_workers: int
 
 
+class ApiMainRouterSettings(BaseModel):
+    prefix: str = "/api"
+
+
 class ApiV1Prefix(BaseModel):
     router_v1: str = "/v1"
     hello_world: str = "/hello_world"
     auth: str = "/auth"
 
+    @property
+    def bearer_transport(self):
+        # api/v1/auth/loggin
+
+        return "".join(
+            [
+                ApiMainRouterSettings().prefix.replace("/", ""),
+                self.router_v1,
+                self.auth,
+                "/loggin",
+            ]
+        )
+
 
 class ApiV1Tags(BaseModel):
     hello_world: list[str] = ["Test routes"]
-    auth: str = "auth"
+    auth: list[str] = ["auth"]
 
 
 class ApiV1Summary(BaseModel):
@@ -34,10 +51,6 @@ class ApiV1Subs(BaseModel):
     prefix: ApiV1Prefix = ApiV1Prefix()
     tags: ApiV1Tags = ApiV1Tags()
     summary: ApiV1Summary = ApiV1Summary()
-
-
-class ApiMainRouterSettings(BaseModel):
-    prefix: str = "/api"
 
 
 class ApiCustoms(BaseModel):
