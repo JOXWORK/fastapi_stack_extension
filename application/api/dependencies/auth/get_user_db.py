@@ -3,5 +3,5 @@ from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
-async def get_user_db(session: AsyncSession = Depends(db_attach)):
+async def get_user_db(session: AsyncSession = Depends(db_attach.new_session)):
     yield User.get_db(session=session)
