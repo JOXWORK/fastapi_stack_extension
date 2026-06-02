@@ -1,10 +1,18 @@
 from core.config import settings
 from fastapi import APIRouter
 
+from .authentication.auth import router as authentication_router
 from .hello_world.views import router as hello_world_router
 
 router = APIRouter(prefix=settings.api.v1.prefix.router_v1)
+
+
 router.include_router(
     router=hello_world_router,
     tags=settings.api.v1.tags.hello_world,
+)
+
+router.include_router(
+    router=authentication_router,
+    tags=settings.api.v1.tags.auth,
 )
