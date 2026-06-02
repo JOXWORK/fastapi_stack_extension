@@ -1,7 +1,7 @@
-from fastapi_users.db import SQLAlchemyUserDatabase
 from fastapi_users_db_sqlalchemy.access_token import (
     AsyncSession,
     Mapped,
+    SQLAlchemyAccessTokenDatabase,
     SQLAlchemyBaseAccessTokenTable,
     String,
     mapped_column,
@@ -28,4 +28,7 @@ class AccessToken(Base, SQLAlchemyBaseAccessTokenTable[UserIdType]):
 
     @classmethod
     def get_db(cls, session: AsyncSession):
-        return SQLAlchemyUserDatabase(session=session, user_table=cls)
+        return SQLAlchemyAccessTokenDatabase(
+            session=session,
+            access_token_table=cls,
+        )
