@@ -10,7 +10,6 @@ http_bearer = HTTPBearer(auto_error=False)
 
 router = APIRouter(
     prefix=settings.api.v1.prefix.auth,
-    tags=settings.api.v1.tags.auth,
     dependencies=[Depends(http_bearer)],
 )
 
