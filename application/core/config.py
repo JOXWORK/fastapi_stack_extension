@@ -40,7 +40,7 @@ class ApiV1Prefix(BaseModel):
 
 class ApiV1Tags(BaseModel):
     hello_world: list[str] = ["Test routes"]
-    auth: list[str] = ["auth"]
+    auth: list[str] = ["Auth"]
 
 
 class ApiV1Summary(BaseModel):
