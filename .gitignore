@@ -216,3 +216,6 @@ __marimo__/
 
 # Dev-test stuff
 .stuff
+
+# FastAPI-Users superuser schemas
+_superuser_*.py
