@@ -1,5 +1,5 @@
 from core.config import settings
-from core.schemas.auth import UserCreate, UserRead, UserUpdate
+from core.schemas.authentication import UserCreate, UserRead, UserUpdate
 from fastapi import APIRouter, Depends
 from fastapi.security import HTTPBearer
 
