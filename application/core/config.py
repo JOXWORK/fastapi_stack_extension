@@ -33,7 +33,7 @@ class ApiV1Prefix(BaseModel):
                 ApiMainRouterSettings().prefix.replace("/", ""),
                 self.router_v1,
                 self.auth,
-                "/loggin",
+                "/login",
             ]
         )
 
@@ -140,3 +140,6 @@ class Settings(BaseSettings):
 ## Такой подход удобен для загрузки файлов конфига в репозиторий, не раскрывая secrets информацию.
 
 settings = Settings()
+
+
+print(settings.api.v1.prefix.bearer_transport)
