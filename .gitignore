@@ -219,3 +219,6 @@ __marimo__/
 
 # FastAPI-Users superuser schemas
 _superuser_*.py
+
+# Stuff test ignore
+.stuff_test.*.py
