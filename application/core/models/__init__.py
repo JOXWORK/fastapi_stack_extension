@@ -5,6 +5,7 @@ from .user import User
 from .example import Example
 from .access_token import AccessToken
 from .db_attach import db_attach
+from .user_session import UserSession
 
 __all__ = (
     "db_attach",
@@ -12,4 +13,5 @@ __all__ = (
     "Example",
     "User",
     "AccessToken",
+    "UserSession",
 )
