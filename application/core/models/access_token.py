@@ -17,7 +17,6 @@ class AccessToken(Base, SQLAlchemyBaseAccessTokenTable[UserIdType]):
     token: Mapped[str] = mapped_column(
         String(length=43),
         primary_key=True,
-        unique=True,
     )
     user_id: Mapped[int] = mapped_column(
         ForeignKey(
