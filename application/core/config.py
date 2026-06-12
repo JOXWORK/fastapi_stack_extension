@@ -104,8 +104,15 @@ class AccessToken(BaseModel):
     verification_token_secret: str
 
 
+class UserSession(BaseModel):
+    lifetime_minutes: float = 0
+    lifetime_hours: float = 0
+    lifetime_days: float = 7
+
+
 class AuthSettings(BaseModel):
     access_token: AccessToken
+    user_session: UserSession = UserSession()
 
 
 class Settings(BaseSettings):

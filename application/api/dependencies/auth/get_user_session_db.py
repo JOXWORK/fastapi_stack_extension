@@ -1,10 +1,14 @@
-from collections.abc import AsyncGenerator
-
 from core.authentication.strategy_own import UserSessionDatabase
+from core.config import settings
 from core.models import db_attach
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
-async def get_user_session_db(session: AsyncSession = Depends(db_attach.new_session)) -> AsyncGenerator[UserSessionDatabase]:
-    yield UserSessionDatabase(session=session)
+async def get_user_session_db(session: AsyncSession = Depends(db_attach.new_session)):
+    yield UserSessionDatabase(
+        session=session,
+        lifetime_minutes=settings.auth.user_session.lifetime_minutes,
+        lifetime_hours=settings.auth.user_session.lifetime_hours,
+        lifetime_days=settings.auth.user_session.lifetime_days,
+    )
