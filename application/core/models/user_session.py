@@ -1,5 +1,6 @@
-from datetime import datetime, timezone
+from datetime import datetime
 
+from fastapi_users_db_sqlalchemy.generics import now_utc
 from sqlalchemy import DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -18,7 +19,12 @@ class UserSession(Base, BaseIntIdPkMixin):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         index=True,
-        default=datetime.now(timezone.utc),
+        default=now_utc,
     )
 
-    revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), index=True)
+    revoked_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        index=True,
+    )
+
+    # expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True) #! Need to adjust!
