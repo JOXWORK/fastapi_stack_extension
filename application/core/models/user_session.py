@@ -5,10 +5,14 @@ from sqlalchemy import DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
 from .base import Base
-from .mixins import BaseIntIdPkMixin
+from .mixins import BaseIntIdPkMixin, UserSessionExpiresAtMixin
 
 
-class UserSession(Base, BaseIntIdPkMixin):
+class UserSession(
+    Base,
+    BaseIntIdPkMixin,
+    UserSessionExpiresAtMixin,
+):
     user_id: Mapped[int] = mapped_column(
         ForeignKey(
             column="users.id",
@@ -26,5 +30,3 @@ class UserSession(Base, BaseIntIdPkMixin):
         DateTime(timezone=True),
         index=True,
     )
-
-    # expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True) #! Need to adjust!
