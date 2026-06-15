@@ -15,12 +15,14 @@ class UserSessionDatabase:
         lifetime_minutes: float = 0,
         lifetime_hours: float = 0,
         lifetime_days: float = 0,
+        lifetime_weeks: float = 0,
     ):
         self.session = session
         self.lifetime_seconds = lifetime_seconds
         self.lifetime_minutes = lifetime_minutes
         self.lifetime_hours = lifetime_hours
         self.lifetime_days = lifetime_days
+        self.lifetime_weeks = lifetime_weeks
 
     async def check_user_session(self, access_token: AccessToken) -> None:
         user_session = await self.session.get(UserSession, access_token.session_id)
@@ -31,6 +33,7 @@ class UserSessionDatabase:
                 minutes=self.lifetime_minutes,
                 hours=self.lifetime_hours,
                 days=self.lifetime_days,
+                weeks=self.lifetime_weeks,
             )
         else:
             user_session_expires_at = user_session.expires_at
