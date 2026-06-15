@@ -9,9 +9,9 @@ from core.config import settings
 
 def calc_expires_at(
     lifetime_seconds: float = 0,
-    lifetime_minutes: float = 0,
-    lifetime_hours: float = 0,
-    lifetime_days: float = 0,
+    lifetime_minutes: float = settings.auth.user_session.lifetime_minutes,
+    lifetime_hours: float = settings.auth.user_session.lifetime_hours,
+    lifetime_days: float = settings.auth.user_session.lifetime_days,
     lifetime_weeks: float = 0,
 ):
     now_time = now_utc()
@@ -30,9 +30,5 @@ class UserSessionExpiresAtMixin:
     expires_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         index=True,
-        default=calc_expires_at(
-            lifetime_minutes=settings.auth.user_session.lifetime_minutes,
-            lifetime_hours=settings.auth.user_session.lifetime_hours,
-            lifetime_days=settings.auth.user_session.lifetime_days,
-        ),
+        default=calc_expires_at,
     )
