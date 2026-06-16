@@ -1,4 +1,4 @@
-from core.authentication.strategy_own import UserSessionDatabase
+from core.authentication.own import UserSessionDatabase
 from core.config import settings
 from core.models import db_attach
 from fastapi import Depends

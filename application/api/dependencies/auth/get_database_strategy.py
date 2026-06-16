@@ -1,4 +1,4 @@
-from core.authentication.strategy_own import StrategyOwn, UserSessionDatabase
+from core.authentication.own import StrategyOwn, UserSessionDatabase
 from core.config import settings
 from core.models import AccessToken
 from fastapi import Depends
