@@ -1,0 +1,20 @@
+from fastapi import Response
+from fastapi_users.authentication import AuthenticationBackend
+
+from core.models import User
+
+from .bearer_own import BearerTransportOwn
+from .strategy_own import StrategyOwn
+
+
+class AuthenticationBackendOwn(AuthenticationBackend):
+    def __init__(self, name, transport, get_strategy):
+        self.transport: BearerTransportOwn
+        super().__init__(name, transport, get_strategy)
+
+    async def login(self, strategy: StrategyOwn, user: User) -> Response:
+        access_token, refresh_token = await strategy.write_token(user)
+        return await self.transport.get_login_response(
+            access_token=access_token,
+            refresh_token=refresh_token,
+        )
