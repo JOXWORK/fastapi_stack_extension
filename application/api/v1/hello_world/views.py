@@ -23,7 +23,7 @@ from .dependencies import (
     create_file_depends,
 )
 
-router = APIRouter(prefix=settings.api.v1.prefix.hello_world)
+router = APIRouter()
 
 
 @router.get("/", summary=settings.api.v1.summary.hello_world)
