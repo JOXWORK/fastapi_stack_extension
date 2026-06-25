@@ -26,7 +26,7 @@ class ApiV1Prefix(BaseModel):
 
     @property
     def bearer_transport(self):
-        # api/v1/auth/loggin
+        # api/v1/auth/login
 
         return "".join(
             [
