@@ -1,10 +1,16 @@
-from fastapi import Response
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from fastapi_users.authentication import AuthenticationBackend
 
-from core.models import User
+if TYPE_CHECKING:
+    from fastapi import Response
 
-from .bearer_own import BearerTransportOwn
-from .strategy_own import StrategyOwn
+    from core.models.user import User
+
+    from .bearer_own import BearerTransportOwn
+    from .strategy_own import StrategyOwn
 
 
 class AuthenticationBackendOwn(AuthenticationBackend):

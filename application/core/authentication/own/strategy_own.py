@@ -1,15 +1,23 @@
+from __future__ import annotations
+
 from datetime import datetime, timedelta, timezone
 from secrets import token_urlsafe
+from typing import TYPE_CHECKING
 
-from fastapi_users import BaseUserManager, exceptions
-from fastapi_users.authentication.strategy.db import AccessTokenDatabase, DatabaseStrategy
+from fastapi_users import exceptions
+from fastapi_users.authentication.strategy.db import DatabaseStrategy
 from fastapi_users.password import PasswordHelper
 
-from core.models import User, UserSession
-
 from .exceptions_own import UserSessionInvalid
-from .refresh_token_database import RefreshTokenDatabase
-from .user_session_database import UserSessionDatabase
+
+if TYPE_CHECKING:
+    from fastapi_users import BaseUserManager
+    from fastapi_users.authentication.strategy.db import AccessTokenDatabase
+
+    from core.models import User, UserSession
+
+    from .refresh_token_database import RefreshTokenDatabase
+    from .user_session_database import UserSessionDatabase
 
 
 class StrategyOwn(DatabaseStrategy):

@@ -1,8 +1,15 @@
+from __future__ import annotations
+
 from datetime import datetime, timedelta, timezone
+from typing import TYPE_CHECKING
 
-from sqlalchemy.ext.asyncio import AsyncSession
+if TYPE_CHECKING:
+    from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.models import AccessToken, User, UserSession
+    from core.models import AccessToken, User
+
+
+from core.models.user_session import UserSession
 
 from .exceptions_own import UserSessionInvalid
 

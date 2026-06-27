@@ -1,6 +1,11 @@
-from sqlalchemy.ext.asyncio import AsyncSession
+from __future__ import annotations
 
-from core.models import RefreshToken
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from sqlalchemy.ext.asyncio import AsyncSession
+
+from core.models.refresh_token import RefreshToken
 
 
 class RefreshTokenDatabase:
