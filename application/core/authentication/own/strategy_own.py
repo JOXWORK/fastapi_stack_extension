@@ -12,10 +12,10 @@ from .exceptions_own import UserSessionInvalid
 
 if TYPE_CHECKING:
     from fastapi_users import BaseUserManager
-    from fastapi_users.authentication.strategy.db import AccessTokenDatabase
 
-    from core.models import User, UserSession
+    from core.models import AccessToken, User, UserSession
 
+    from .access_token_own import SQLAlchemyAccessTokenDatabaseOwn
     from .refresh_token_database import RefreshTokenDatabase
     from .user_session_database import UserSessionDatabase
 
@@ -24,7 +24,7 @@ class StrategyOwn(DatabaseStrategy):
     def __init__(
         self,
         user_session_database: UserSessionDatabase,
-        database: AccessTokenDatabase,
+        database: SQLAlchemyAccessTokenDatabaseOwn,
         refresh_token_database: RefreshTokenDatabase,
         lifetime_seconds=None,
     ):
@@ -55,6 +55,17 @@ class StrategyOwn(DatabaseStrategy):
             return await user_manager.get(parsed_id)
         except (exceptions.UserNotExists, exceptions.InvalidID, UserSessionInvalid):
             return None
+
+    async def read_token_ignore_expire(self, token: str | None) -> AccessToken:
+        if token is None:
+            return None
+
+        access_token = await self.database.get_token_ignore_expire(token=token)
+
+        if access_token is None:
+            return None
+
+        return access_token
 
     async def write_token(self, user: User) -> tuple[str, str]:
         user_session = await self.user_session_database.create_user_session(user=user)
