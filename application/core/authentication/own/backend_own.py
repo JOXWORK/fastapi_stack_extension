@@ -15,8 +15,9 @@ if TYPE_CHECKING:
 
 class AuthenticationBackendOwn(AuthenticationBackend):
     def __init__(self, name, transport, get_strategy):
-        self.transport: BearerTransportOwn
         super().__init__(name, transport, get_strategy)
+
+        self.transport: BearerTransportOwn
 
     async def login(self, strategy: StrategyOwn, user: User) -> Response:
         access_token, refresh_token = await strategy.write_token(user)
