@@ -2,7 +2,7 @@ from core.config import settings
 from fastapi import APIRouter
 
 from .authentication.authentication import router as authentication_router
-from .authentication.refresh import router as refresh_router
+from .authentication.reissue import router as refresh_router
 from .hello_world.views import router as hello_world_router
 
 router = APIRouter(prefix=settings.api.v1.prefix.router_v1)
