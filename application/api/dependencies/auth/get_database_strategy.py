@@ -9,7 +9,7 @@ from .get_refresh_token_db import get_refresh_token_db
 from .get_user_session_db import get_user_session_db
 
 
-def get_database_strategy(
+async def get_database_strategy(
     user_session_database: UserSessionDatabase = Depends(get_user_session_db),
     access_token_db: AccessTokenDatabase[AccessToken] = Depends(get_access_token_db),
     refresh_token_db: RefreshTokenDatabase = Depends(get_refresh_token_db),
