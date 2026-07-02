@@ -1,13 +1,13 @@
 from fastapi_users_db_sqlalchemy.access_token import (
     AsyncSession,
     Mapped,
-    SQLAlchemyAccessTokenDatabase,
     SQLAlchemyBaseAccessTokenTable,
     String,
     mapped_column,
 )
 from sqlalchemy import ForeignKey
 
+from core.authentication.own.access_token_own import SQLAlchemyAccessTokenDatabaseOwn
 from core.types_own.user_id import UserIdType
 
 from .base import Base
@@ -35,7 +35,7 @@ class AccessToken(Base, SQLAlchemyBaseAccessTokenTable[UserIdType]):
 
     @classmethod
     def get_db(cls, session: AsyncSession):
-        return SQLAlchemyAccessTokenDatabase(
+        return SQLAlchemyAccessTokenDatabaseOwn(
             session=session,
             access_token_table=cls,
         )
