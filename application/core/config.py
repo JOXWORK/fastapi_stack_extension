@@ -110,8 +110,13 @@ class UserSession(BaseModel):
     lifetime_days: float = 7
 
 
+class RefreshToken(BaseModel):
+    hmac_secret: str
+
+
 class AuthSettings(BaseModel):
     access_token: AccessToken
+    refresh_token: RefreshToken
     user_session: UserSession = UserSession()
 
 

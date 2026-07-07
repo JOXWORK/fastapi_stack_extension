@@ -1,12 +1,15 @@
 from __future__ import annotations
 
+import hashlib
+import hmac
 from datetime import datetime, timedelta, timezone
 from secrets import token_urlsafe
 from typing import TYPE_CHECKING
 
 from fastapi_users import exceptions
 from fastapi_users.authentication.strategy.db import DatabaseStrategy
-from fastapi_users.password import PasswordHelper
+
+from core.config import settings
 
 from .exceptions_own import UserSessionInvalid
 
@@ -30,7 +33,6 @@ class StrategyOwn(DatabaseStrategy):
     ):
         self.user_session_database = user_session_database
         self.refresh_token_database = refresh_token_database
-        self.password_helper = PasswordHelper()
         super().__init__(database, lifetime_seconds)
 
     async def read_token(
@@ -98,11 +100,26 @@ class StrategyOwn(DatabaseStrategy):
         user: User,
     ) -> dict[str, str, int, int]:
         refresh_token = token_urlsafe()
-        token_hash = self.password_helper.hash(refresh_token)
+
+        hmac_digest = await self._hmac_digest(
+            key=settings.auth.refresh_token.hmac_secret,
+            message=refresh_token,
+            digestmod=hashlib.sha256,
+        )
 
         return {
             "refresh_token": refresh_token,
-            "token_hash": token_hash,
+            "token_hash": hmac_digest,
             "session_id": user_session.id,
             "user_id": user.id,
         }
+
+    async def _hmac_digest(self, key: str, message: str, digestmod):
+
+        hmac_ = hmac.new(
+            key=key.encode(),
+            msg=message.encode(),
+            digestmod=digestmod,
+        )
+
+        return hmac_.hexdigest()
