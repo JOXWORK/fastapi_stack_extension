@@ -86,6 +86,9 @@ class StrategyOwn(DatabaseStrategy):
 
         return access_token.token, refresh_token_unhashed
 
+    async def reissue_token(self, refresh_token: str, user_manager: BaseUserManager) -> tuple[str, str]:
+        pass
+
     async def destroy_token(self, token: str, user: User, *, session_destroy: bool = True) -> None:
         access_token = await self.database.get_by_token(token)
         if access_token is not None:

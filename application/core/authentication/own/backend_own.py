@@ -6,6 +6,7 @@ from fastapi_users.authentication import AuthenticationBackend
 
 if TYPE_CHECKING:
     from fastapi import Response
+    from fastapi_users import BaseUserManager
 
     from core.models.user import User
 
@@ -24,4 +25,10 @@ class AuthenticationBackendOwn(AuthenticationBackend):
         return await self.transport.get_login_response(
             access_token=access_token,
             refresh_token=refresh_token,
+        )
+
+    async def reissue(self, strategy: StrategyOwn, user_manager: BaseUserManager, token: str) -> Response:
+        access_token, refresh_token = await strategy.reissue_token(
+            refresh_token=token,
+            user_manager=user_manager,
         )
