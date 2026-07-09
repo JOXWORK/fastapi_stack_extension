@@ -9,7 +9,7 @@ from .mixins import BaseIntIdPkMixin
 
 
 class RefreshToken(Base, BaseIntIdPkMixin):
-    token_hash: Mapped[str] = mapped_column(String(1024))
+    fingerprint: Mapped[str] = mapped_column(String(1024))
 
     session_id: Mapped[int] = mapped_column(
         ForeignKey(
