@@ -16,7 +16,7 @@ from .exceptions_own import UserSessionInvalid
 if TYPE_CHECKING:
     from fastapi_users import BaseUserManager
 
-    from core.models import AccessToken, User, UserSession
+    from core.models import AccessToken, User
 
     from .access_token_own import SQLAlchemyAccessTokenDatabaseOwn
     from .refresh_token_database import RefreshTokenDatabase
@@ -78,7 +78,7 @@ class StrategyOwn(DatabaseStrategy):
         access_token_dict.update({"session_id": user_session.id})
 
         refresh_token_dict = await self._create_refresh_token_dict(
-            user_session=user_session,
+            user_session_id=user_session.id,
             user=user,
         )
         refresh_token_unhashed = refresh_token_dict.pop("refresh_token")
@@ -103,12 +103,12 @@ class StrategyOwn(DatabaseStrategy):
 
     async def _create_refresh_token_dict(
         self,
-        user_session: UserSession,
+        user_session_id: int,
         user: User,
     ) -> dict[str, str, int, int]:
         refresh_token = token_urlsafe()
 
-        hmac_digest = await self._hmac_digest(
+        hmac_fingerprint = await self._hmac_digest(
             key=settings.auth.refresh_token.hmac_secret,
             message=refresh_token,
             digestmod=hashlib.sha256,
@@ -116,8 +116,8 @@ class StrategyOwn(DatabaseStrategy):
 
         return {
             "refresh_token": refresh_token,
-            "token_hash": hmac_digest,
-            "session_id": user_session.id,
+            "fingerprint": hmac_fingerprint,
+            "session_id": user_session_id,
             "user_id": user.id,
         }
 
