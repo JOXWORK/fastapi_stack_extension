@@ -51,8 +51,10 @@ class StrategyOwn(DatabaseStrategy):
         if access_token is None:
             return None
 
+        user_session = await self.user_session_database.get(user_session_id=access_token.session_id)
+
         try:
-            await self.user_session_database.check_user_session(access_token=access_token)
+            await self.user_session_database.check(user_session)
             parsed_id = user_manager.parse_id(access_token.user_id)
             return await user_manager.get(parsed_id)
         except (exceptions.UserNotExists, exceptions.InvalidID, UserSessionInvalid):
@@ -70,7 +72,7 @@ class StrategyOwn(DatabaseStrategy):
         return access_token
 
     async def write_token(self, user: User) -> tuple[str, str]:
-        user_session = await self.user_session_database.create_user_session(user=user)
+        user_session = await self.user_session_database.create(user=user)
 
         access_token_dict = self._create_access_token_dict(user)
         access_token_dict.update({"session_id": user_session.id})
@@ -82,20 +84,22 @@ class StrategyOwn(DatabaseStrategy):
         refresh_token_unhashed = refresh_token_dict.pop("refresh_token")
 
         access_token = await self.database.create(access_token_dict)
-        refresh_token = await self.refresh_token_database.create_refresh_token(refresh_token_dict=refresh_token_dict)  # noqa: F841
+        refresh_token = await self.refresh_token_database.create(refresh_token_dict=refresh_token_dict)  # noqa: F841
 
         return access_token.token, refresh_token_unhashed
 
     async def reissue_token(self, refresh_token: str, user_manager: BaseUserManager) -> tuple[str, str]:
         pass
 
-    async def destroy_token(self, token: str, user: User, *, session_destroy: bool = True) -> None:
+    async def destroy_token(self, token: str, user: User, *, session_destroy: bool = False) -> None:
         access_token = await self.database.get_by_token(token)
         if access_token is not None:
-            if session_destroy:
-                await self.user_session_database.destroy_session(access_token=access_token)
-            else:
+            user_session = await self.user_session_database.get(access_token.session_id)
+            if not session_destroy:
+                await self.user_session_database.revoke(user_session)
                 await self.database.delete(access_token)
+            else:
+                await self.user_session_database.destroy(user_session)
 
     async def _create_refresh_token_dict(
         self,
@@ -118,7 +122,6 @@ class StrategyOwn(DatabaseStrategy):
         }
 
     async def _hmac_digest(self, key: str, message: str, digestmod):
-
         hmac_ = hmac.new(
             key=key.encode(),
             msg=message.encode(),

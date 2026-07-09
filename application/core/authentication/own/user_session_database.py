@@ -1,12 +1,14 @@
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import timedelta
 from typing import TYPE_CHECKING
+
+from fastapi_users_db_sqlalchemy.generics import now_utc
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
-    from core.models import AccessToken, User
+    from core.models import User
 
 
 from core.models.user_session import UserSession
@@ -31,9 +33,7 @@ class UserSessionDatabase:
         self.lifetime_days = lifetime_days
         self.lifetime_weeks = lifetime_weeks
 
-    async def check_user_session(self, access_token: AccessToken) -> None:
-        user_session = await self.session.get(UserSession, access_token.session_id)
-
+    async def check(self, user_session: UserSession) -> None:
         if not hasattr(user_session, "expires_at"):
             user_session_expires_at = user_session.created_at + timedelta(
                 seconds=self.lifetime_seconds,
@@ -45,10 +45,13 @@ class UserSessionDatabase:
         else:
             user_session_expires_at = user_session.expires_at
 
-        if datetime.now(timezone.utc) > user_session_expires_at or user_session.revoked_at:
+        if now_utc() > user_session_expires_at or user_session.revoked_at:
             raise UserSessionInvalid
 
-    async def create_user_session(self, user: User) -> UserSession:
+    async def get(self, user_session_id: int) -> UserSession:
+        return await self.session.get(UserSession, user_session_id)
+
+    async def create(self, user: User) -> UserSession:
         user_session = UserSession(user_id=user.id)
         self.session.add(user_session)
         await self.session.commit()
@@ -56,7 +59,10 @@ class UserSessionDatabase:
 
         return user_session
 
-    async def destroy_session(self, access_token: AccessToken) -> None:
-        user_session = await self.session.get(UserSession, access_token.session_id)
+    async def revoke(self, user_session: UserSession) -> None:
+        user_session.revoked_at = now_utc()
+        await self.session.commit()
+
+    async def destroy(self, user_session: UserSession) -> None:
         await self.session.delete(user_session)
         await self.session.commit()
