@@ -3,12 +3,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from core.schemas.authentication import TokenRefreshSchema
-from fastapi import APIRouter, Depends
-
-from api.dependencies.auth import get_token_catcher
+from fastapi import APIRouter
 
 if TYPE_CHECKING:
-    from core.models import AccessToken
+    pass
 
 router = APIRouter()
 
@@ -16,9 +14,7 @@ router = APIRouter()
 @router.post("/reissue")
 async def reissue(
     refresh_token: TokenRefreshSchema,
-    access_token: AccessToken | None = Depends(get_token_catcher),
 ):
     return {
-        "access_token": access_token,
         "refresh_token": refresh_token,
     }
