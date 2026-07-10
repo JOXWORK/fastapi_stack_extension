@@ -4,7 +4,7 @@ import hashlib
 import hmac
 from datetime import datetime, timedelta, timezone
 from secrets import token_urlsafe
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from fastapi_users import exceptions
 from fastapi_users.authentication.strategy.db import DatabaseStrategy
