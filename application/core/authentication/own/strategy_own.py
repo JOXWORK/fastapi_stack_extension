@@ -4,7 +4,7 @@ import hashlib
 import hmac
 from datetime import datetime, timedelta, timezone
 from secrets import token_urlsafe
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from fastapi_users import exceptions
 from fastapi_users.authentication.strategy.db import DatabaseStrategy
@@ -51,7 +51,9 @@ class StrategyOwn(DatabaseStrategy):
         if access_token is None:
             return None
 
-        user_session = await self.user_session_database.get(user_session_id=access_token.session_id)
+        user_session = await self.user_session_database.get(access_token.session_id)
+        if user_session is None:
+            return None
 
         try:
             await self.user_session_database.check(user_session)
@@ -74,19 +76,21 @@ class StrategyOwn(DatabaseStrategy):
     async def write_token(self, user: User) -> tuple[str, str]:
         user_session = await self.user_session_database.create(user=user)
 
-        access_token_dict = self._create_access_token_dict(user)
-        access_token_dict.update({"session_id": user_session.id})
+        access_token_dict = self._create_access_token_dict(
+            user=user,
+            user_session_id=user_session.id,
+        )
 
         refresh_token_dict = await self._create_refresh_token_dict(
-            user_session_id=user_session.id,
             user=user,
+            user_session_id=user_session.id,
         )
-        refresh_token_unhashed = refresh_token_dict.pop("refresh_token")
+        raw_refresh_token = refresh_token_dict.pop("refresh_token")
 
         access_token = await self.database.create(access_token_dict)
-        refresh_token = await self.refresh_token_database.create(refresh_token_dict=refresh_token_dict)  # noqa: F841
+        refresh_token = await self.refresh_token_database.create(refresh_token_dict)  # noqa: F841
 
-        return access_token.token, refresh_token_unhashed
+        return access_token.token, raw_refresh_token
 
     async def reissue_token(self, refresh_token: str, user_manager: BaseUserManager) -> tuple[str, str]:
         pass
@@ -95,16 +99,29 @@ class StrategyOwn(DatabaseStrategy):
         access_token = await self.database.get_by_token(token)
         if access_token is not None:
             user_session = await self.user_session_database.get(access_token.session_id)
-            if not session_destroy:
-                await self.user_session_database.revoke(user_session)
-                await self.database.delete(access_token)
-            else:
-                await self.user_session_database.destroy(user_session)
+            if user_session is not None:
+                if not session_destroy:
+                    await self.user_session_database.revoke(user_session)
+                    await self.database.delete(access_token)
+                else:
+                    await self.user_session_database.destroy(user_session)
+
+    def _create_access_token_dict(
+        self,
+        user: User,
+        user_session_id: int,
+    ) -> dict[str, int, int]:
+        token = token_urlsafe()
+        return {
+            "token": token,
+            "session_id": user_session_id,
+            "user_id": user.id,
+        }
 
     async def _create_refresh_token_dict(
         self,
-        user_session_id: int,
         user: User,
+        user_session_id: int,
     ) -> dict[str, str, int, int]:
         refresh_token = token_urlsafe()
 
@@ -121,7 +138,7 @@ class StrategyOwn(DatabaseStrategy):
             "user_id": user.id,
         }
 
-    async def _hmac_digest(self, key: str, message: str, digestmod):
+    async def _hmac_digest(self, key: str, message: str, digestmod) -> str:
         hmac_ = hmac.new(
             key=key.encode(),
             msg=message.encode(),
