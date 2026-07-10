@@ -47,7 +47,7 @@ def main():
     World = "World"
     foo = 12
 
-    schema = HelloWorldSchema(
+    schema = HelloWorldSchema(  # noqa: F841
         Hello=Hello,
         World=World,
         foo=foo,
