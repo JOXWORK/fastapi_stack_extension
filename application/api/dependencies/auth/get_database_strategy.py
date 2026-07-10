@@ -1,17 +1,22 @@
-from core.authentication.own import RefreshTokenDatabase, StrategyOwn, UserSessionDatabase
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from core.authentication.own import StrategyOwn
 from core.config import settings
-from core.models import AccessToken
 from fastapi import Depends
-from fastapi_users.authentication.strategy.db import AccessTokenDatabase
 
 from .get_access_token_db import get_access_token_db
 from .get_refresh_token_db import get_refresh_token_db
 from .get_user_session_db import get_user_session_db
 
+if TYPE_CHECKING:
+    from core.authentication.own import RefreshTokenDatabase, SQLAlchemyAccessTokenDatabaseOwn, UserSessionDatabase
+
 
 async def get_database_strategy(
     user_session_database: UserSessionDatabase = Depends(get_user_session_db),
-    access_token_db: AccessTokenDatabase[AccessToken] = Depends(get_access_token_db),
+    access_token_db: SQLAlchemyAccessTokenDatabaseOwn = Depends(get_access_token_db),
     refresh_token_db: RefreshTokenDatabase = Depends(get_refresh_token_db),
 ) -> StrategyOwn:
     return StrategyOwn(

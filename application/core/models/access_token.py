@@ -1,5 +1,8 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from fastapi_users_db_sqlalchemy.access_token import (
-    AsyncSession,
     Mapped,
     SQLAlchemyBaseAccessTokenTable,
     String,
@@ -11,6 +14,9 @@ from core.authentication.own.access_token_own import SQLAlchemyAccessTokenDataba
 from core.types_own.user_id import UserIdType
 
 from .base import Base
+
+if TYPE_CHECKING:
+    from fastapi_users_db_sqlalchemy.access_token import AsyncSession
 
 
 class AccessToken(Base, SQLAlchemyBaseAccessTokenTable[UserIdType]):

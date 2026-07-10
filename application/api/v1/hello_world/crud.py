@@ -5,15 +5,20 @@ Update
 Delete
 """
 
+from __future__ import annotations
+
 from os import remove as file_remove
 from random import choice
 from string import ascii_letters, digits
+from typing import TYPE_CHECKING
 
 import httpx
 from core.models import Example
 from core.tasks import for_loop_task_example_task
-from sqlalchemy.ext.asyncio import AsyncSession
-from taskiq.result.result import TaskiqResult
+
+if TYPE_CHECKING:
+    from sqlalchemy.ext.asyncio import AsyncSession
+    from taskiq.result.result import TaskiqResult
 
 
 def create_file(path: str, content: str) -> bool:

@@ -1,13 +1,18 @@
-from typing import AsyncGenerator
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from sqlalchemy.ext.asyncio import (
-    AsyncEngine,
-    AsyncSession,
     async_sessionmaker,
     create_async_engine,
 )
 
 from core.config import settings
+
+if TYPE_CHECKING:
+    from typing import AsyncGenerator
+
+    from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 
 ## Database tools
 
