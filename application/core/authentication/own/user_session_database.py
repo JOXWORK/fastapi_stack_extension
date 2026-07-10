@@ -46,7 +46,7 @@ class UserSessionDatabase:
             user_session_expires_at = user_session.expires_at
 
         if now_utc() > user_session_expires_at or user_session.revoked_at:
-            raise UserSessionInvalid
+            raise UserSessionInvalid()
 
     async def get(self, user_session_id: int) -> UserSession:
         return await self.session.get(UserSession, user_session_id)
