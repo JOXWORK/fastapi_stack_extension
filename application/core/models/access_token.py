@@ -38,10 +38,3 @@ class AccessToken(Base, SQLAlchemyBaseAccessTokenTable[UserIdType]):
             ondelete="cascade",
         )
     )
-
-    @classmethod
-    def get_db(cls, session: AsyncSession):
-        return SQLAlchemyAccessTokenDatabaseOwn(
-            session=session,
-            access_token_table=cls,
-        )

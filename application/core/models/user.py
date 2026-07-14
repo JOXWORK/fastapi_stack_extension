@@ -21,10 +21,3 @@ class User(
     BaseIntIdPkMixin,
 ):
     name: Mapped[str | None] = mapped_column(String(50))
-
-    @classmethod
-    def get_db(cls, session: AsyncSession):
-        return SQLAlchemyUserDatabase(
-            session=session,
-            user_table=cls,
-        )

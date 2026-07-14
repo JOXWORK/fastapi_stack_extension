@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from core.authentication.own import SQLAlchemyAccessTokenDatabaseOwn
 from core.models import AccessToken, db_attach
 from fastapi import Depends
 
@@ -12,4 +13,7 @@ if TYPE_CHECKING:
 async def get_access_token_db(
     session: AsyncSession = Depends(db_attach.new_session),
 ):
-    yield AccessToken.get_db(session=session)
+    yield SQLAlchemyAccessTokenDatabaseOwn(
+        session=session,
+        access_token_table=AccessToken,
+    )
