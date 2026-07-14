@@ -27,7 +27,7 @@ class AuthenticationBackendOwn(AuthenticationBackend):
             refresh_token=refresh_token,
         )
 
-    async def reissue(self, strategy: StrategyOwn, user_manager: BaseUserManager, token: str) -> Response:
+    async def reissue(self, token: str, strategy: StrategyOwn, user_manager: BaseUserManager) -> Response:
         access_token, refresh_token = await strategy.reissue_token(
             refresh_token=token,
             user_manager=user_manager,
