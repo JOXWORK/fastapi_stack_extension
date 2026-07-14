@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from fastapi_users_db_sqlalchemy.access_token import (
     Mapped,
     SQLAlchemyBaseAccessTokenTable,
@@ -6,9 +10,13 @@ from fastapi_users_db_sqlalchemy.access_token import (
 )
 from sqlalchemy import ForeignKey
 
+from core.authentication.own.access_token_own import SQLAlchemyAccessTokenDatabaseOwn
 from core.types_own.user_id import UserIdType
 
 from .base import Base
+
+if TYPE_CHECKING:
+    from fastapi_users_db_sqlalchemy.access_token import AsyncSession
 
 
 class AccessToken(Base, SQLAlchemyBaseAccessTokenTable[UserIdType]):
@@ -30,3 +38,10 @@ class AccessToken(Base, SQLAlchemyBaseAccessTokenTable[UserIdType]):
             ondelete="cascade",
         )
     )
+
+    @classmethod
+    def get_db(cls, session: AsyncSession):
+        return SQLAlchemyAccessTokenDatabaseOwn(
+            session=session,
+            access_token_table=cls,
+        )
