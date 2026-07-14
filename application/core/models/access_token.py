@@ -10,13 +10,12 @@ from fastapi_users_db_sqlalchemy.access_token import (
 )
 from sqlalchemy import ForeignKey
 
-from core.authentication.own.access_token_own import SQLAlchemyAccessTokenDatabaseOwn
 from core.types_own.user_id import UserIdType
 
 from .base import Base
 
 if TYPE_CHECKING:
-    from fastapi_users_db_sqlalchemy.access_token import AsyncSession
+    pass
 
 
 class AccessToken(Base, SQLAlchemyBaseAccessTokenTable[UserIdType]):

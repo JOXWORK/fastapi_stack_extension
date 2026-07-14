@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from fastapi_users.db import SQLAlchemyBaseUserTable, SQLAlchemyUserDatabase
+from fastapi_users.db import SQLAlchemyBaseUserTable
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -12,7 +12,7 @@ from core.types_own.user_id import UserIdType
 from .base import Base
 
 if TYPE_CHECKING:
-    from sqlalchemy.ext.asyncio import AsyncSession
+    pass
 
 
 class User(
