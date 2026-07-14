@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from sqlalchemy import select
+
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -19,3 +21,9 @@ class RefreshTokenDatabase:
         await self.session.refresh(refresh_token)
 
         return refresh_token
+
+    async def get_by_fingerprint(self, fingerprint: str) -> RefreshToken:
+        query = select(RefreshToken).where(RefreshToken.fingerprint == fingerprint)
+        result = await self.session.execute(query)
+
+        return result.scalar_one_or_none()
