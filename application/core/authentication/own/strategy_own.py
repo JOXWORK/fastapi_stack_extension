@@ -11,14 +11,15 @@ from fastapi_users.authentication.strategy.db import DatabaseStrategy
 
 from core.config import settings
 
-from .exceptions_own import UserSessionInvalid
+from .exceptions_own import RefreshTokenRevoked, RefreshTokenUsed, UserSessionInvalid
 
 if TYPE_CHECKING:
     from fastapi_users import BaseUserManager
 
-    from core.models import AccessToken, User
+    from core.models import AccessToken, RefreshToken, User, UserSession
 
     from .access_token_own import SQLAlchemyAccessTokenDatabaseOwn
+    from .manager_own import BaseUserManagerOwn
     from .refresh_token_database import RefreshTokenDatabase
     from .user_session_database import UserSessionDatabase
 
@@ -92,8 +93,19 @@ class StrategyOwn(DatabaseStrategy):
 
         return access_token.token, raw_refresh_token
 
-    async def reissue_token(self, refresh_token: str, user_manager: BaseUserManager) -> tuple[str, str]:
-        pass
+    async def reissue_token(self, token: str, user_manager: BaseUserManagerOwn) -> tuple[str, str]:
+        token_fingerprint = await self._hmac_digest(message=token)
+
+        refresh_token = await self.refresh_token_database.get_by_fingerprint(token_fingerprint)
+
+        user = await user_manager.get(refresh_token.user_id)
+
+        user_session = await self.user_session_database.get(refresh_token.session_id)
+
+        return {
+            "access_token": "ABBAB",
+            "refresh_token": "ABBAB",
+        }
 
     async def destroy_token(self, token: str, user: User, *, session_destroy: bool = False) -> None:
         access_token = await self.database.get_by_token(token)
@@ -126,9 +138,7 @@ class StrategyOwn(DatabaseStrategy):
         refresh_token = token_urlsafe()
 
         hmac_fingerprint = await self._hmac_digest(
-            key=settings.auth.refresh_token.hmac_secret,
             message=refresh_token,
-            digestmod=hashlib.sha256,
         )
 
         return {
@@ -138,7 +148,12 @@ class StrategyOwn(DatabaseStrategy):
             "user_id": user.id,
         }
 
-    async def _hmac_digest(self, key: str, message: str, digestmod) -> str:
+    async def _hmac_digest(
+        self,
+        message: str,
+        key: str = settings.auth.refresh_token.hmac_secret,
+        digestmod=hashlib.sha256,
+    ) -> str:
         hmac_ = hmac.new(
             key=key.encode(),
             msg=message.encode(),
@@ -146,3 +161,29 @@ class StrategyOwn(DatabaseStrategy):
         )
 
         return hmac_.hexdigest()
+
+    async def _reissue_check(
+        self,
+        user: User,
+        user_manager: BaseUserManagerOwn,
+        user_session: UserSession,
+        refresh_token: RefreshToken,
+    ):
+        CHECK_FAILURE = False
+
+        try:
+            await self.refresh_token_database.check(refresh_token)
+        except RefreshTokenRevoked:
+            CHECK_FAILURE = True
+            # WARNING LOG
+            await self.user_session_database.revoke(
+                user_session=user_session,
+                force_revoke=False,
+            )
+
+        try:
+            await user_manager.check(user)
+        except exceptions.UserNotExists:
+            pass
+
+        await self.user_session_database.check(user_session)
