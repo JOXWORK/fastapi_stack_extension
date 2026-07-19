@@ -33,6 +33,17 @@ class UserSessionDatabase:
         self.lifetime_days = lifetime_days
         self.lifetime_weeks = lifetime_weeks
 
+    async def create(self, user: User) -> UserSession:
+        user_session = UserSession(user_id=user.id)
+        self.session.add(user_session)
+        await self.session.commit()
+        await self.session.refresh(user_session)
+
+        return user_session
+
+    async def get(self, user_session_id: int) -> UserSession | None:
+        return await self.session.get(UserSession, user_session_id)
+
     async def check(self, user_session: UserSession) -> None:
         if not hasattr(user_session, "expires_at"):
             user_session_expires_at = user_session.created_at + timedelta(
@@ -48,20 +59,10 @@ class UserSessionDatabase:
         if now_utc() > user_session_expires_at or user_session.revoked_at:
             raise UserSessionInvalid()
 
-    async def get(self, user_session_id: int) -> UserSession:
-        return await self.session.get(UserSession, user_session_id)
-
-    async def create(self, user: User) -> UserSession:
-        user_session = UserSession(user_id=user.id)
-        self.session.add(user_session)
-        await self.session.commit()
-        await self.session.refresh(user_session)
-
-        return user_session
-
-    async def revoke(self, user_session: UserSession) -> None:
-        user_session.revoked_at = now_utc()
-        await self.session.commit()
+    async def revoke(self, user_session: UserSession, force_revoke: bool = False) -> None:
+        if not user_session.revoked_at or force_revoke:
+            user_session.revoked_at = now_utc()
+            await self.session.commit()
 
     async def destroy(self, user_session: UserSession) -> None:
         await self.session.delete(user_session)
