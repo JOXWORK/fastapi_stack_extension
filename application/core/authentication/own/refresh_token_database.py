@@ -2,12 +2,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from fastapi_users_db_sqlalchemy.generics import now_utc
 from sqlalchemy import select
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models.refresh_token import RefreshToken
+
+from .exceptions_own import RefreshTokenRevoked
 
 
 class RefreshTokenDatabase:
@@ -22,8 +25,16 @@ class RefreshTokenDatabase:
 
         return refresh_token
 
-    async def get_by_fingerprint(self, fingerprint: str) -> RefreshToken:
+    async def get_by_fingerprint(self, fingerprint: str) -> RefreshToken | None:
         query = select(RefreshToken).where(RefreshToken.fingerprint == fingerprint)
         result = await self.session.execute(query)
 
         return result.scalar_one_or_none()
+
+    async def check(self, refresh_token: RefreshToken) -> None:
+        if refresh_token.revoked_at:
+            raise RefreshTokenRevoked()
+
+    async def revoke(self, refresh_token: RefreshToken) -> None:
+        refresh_token.revoked_at = now_utc()
+        await self.session.commit()
