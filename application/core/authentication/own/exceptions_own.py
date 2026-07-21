@@ -5,13 +5,21 @@ class UserSessionInvalid(FastAPIUsersException):
     pass
 
 
+class UserSessionRevoked(UserSessionInvalid):
+    pass
+
+
+class UserSessionNotExists(UserSessionInvalid):
+    pass
+
+
+class UserSessionExpires(UserSessionInvalid):
+    pass
+
+
 class RefreshTokenRevoked(FastAPIUsersException):
     pass
 
 
-class RefreshTokenUsed(FastAPIUsersException):
-    pass
-
-
-class RefreshTokenNotExeists(FastAPIUsersException):
+class RefreshTokenNotExists(FastAPIUsersException):
     pass
