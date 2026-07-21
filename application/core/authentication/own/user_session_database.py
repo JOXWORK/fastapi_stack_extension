@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from datetime import timedelta
 from typing import TYPE_CHECKING
 
 from fastapi_users_db_sqlalchemy.generics import now_utc
@@ -12,8 +11,6 @@ if TYPE_CHECKING:
 
 
 from core.models.user_session import UserSession
-
-from .exceptions_own import UserSessionInvalid
 
 
 class UserSessionDatabase:
@@ -43,21 +40,6 @@ class UserSessionDatabase:
 
     async def get(self, user_session_id: int) -> UserSession | None:
         return await self.session.get(UserSession, user_session_id)
-
-    async def check(self, user_session: UserSession) -> None:
-        if not hasattr(user_session, "expires_at"):
-            user_session_expires_at = user_session.created_at + timedelta(
-                seconds=self.lifetime_seconds,
-                minutes=self.lifetime_minutes,
-                hours=self.lifetime_hours,
-                days=self.lifetime_days,
-                weeks=self.lifetime_weeks,
-            )
-        else:
-            user_session_expires_at = user_session.expires_at
-
-        if now_utc() > user_session_expires_at or user_session.revoked_at:
-            raise UserSessionInvalid()
 
     async def revoke(self, user_session: UserSession, force_revoke: bool = False) -> None:
         if not user_session.revoked_at or force_revoke:
