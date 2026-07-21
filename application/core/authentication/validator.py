@@ -6,7 +6,9 @@ from typing import TYPE_CHECKING
 from fastapi_users_db_sqlalchemy.generics import now_utc
 
 if TYPE_CHECKING:
-    from core.models import RefreshToken, UserSession
+    from core.models import RefreshToken, User, UserSession
+
+from fastapi_users.exceptions import UserInactive, UserNotExists
 
 from core.config import settings
 
@@ -91,6 +93,27 @@ class Validator:
             if force_raise_:
                 raise RefreshTokenRevoked()
             errors.append(RefreshTokenRevoked)
+
+        return errors
+
+    async def check_user(
+        self,
+        user: User,
+        force_raise: bool | None = None,
+        not_exists_raise: bool = False,
+    ) -> list[UserInactive | UserNotExists]:
+        force_raise_ = await self._force_raise_digest(force_raise=force_raise)
+        errors = []
+
+        if not_exists_raise and user is None:
+            if force_raise_:
+                raise UserNotExists
+            errors.append(UserNotExists)
+
+        if not user.is_active:
+            if force_raise_:
+                raise UserInactive
+            errors.append(UserInactive)
 
         return errors
 
