@@ -9,9 +9,13 @@ from typing import TYPE_CHECKING
 from fastapi_users import exceptions
 from fastapi_users.authentication.strategy.db import DatabaseStrategy
 
+from core.authentication.validator import validator
 from core.config import settings
 
-from .exceptions_own import RefreshTokenRevoked, RefreshTokenUsed, UserSessionInvalid
+from .exceptions_own import (
+    RefreshTokenRevoked,
+    UserSessionInvalid,
+)
 
 if TYPE_CHECKING:
     from fastapi_users import BaseUserManager
@@ -57,7 +61,7 @@ class StrategyOwn(DatabaseStrategy):
             return None
 
         try:
-            await self.user_session_database.check(user_session)
+            await validator.check_user_session(user_session=user_session, force_raise=True)
             parsed_id = user_manager.parse_id(access_token.user_id)
             return await user_manager.get(parsed_id)
         except (exceptions.UserNotExists, exceptions.InvalidID, UserSessionInvalid):
