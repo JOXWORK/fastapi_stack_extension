@@ -10,7 +10,13 @@ if TYPE_CHECKING:
 
 from core.config import settings
 
-from .own.exceptions_own import RefreshTokenNotExists, UserSessionExpires, UserSessionNotExists, UserSessionRevoked
+from .own.exceptions_own import (
+    RefreshTokenNotExists,
+    RefreshTokenRevoked,
+    UserSessionExpires,
+    UserSessionNotExists,
+    UserSessionRevoked,
+)
 
 
 class Validator:
@@ -33,10 +39,10 @@ class Validator:
     async def check_user_session(
         self,
         user_session: UserSession,
-        force_raise: bool | None = None,
+        force_raise: bool = False,
         not_exists_raise: bool = False,
     ) -> list[UserSessionExpires | UserSessionRevoked | UserSessionNotExists]:
-        force_raise_ = self.force_raise or force_raise
+        force_raise_ = await self._force_raise_digest(force_raise=force_raise)
         errors = []
 
         if not_exists_raise and user_session is None:
@@ -67,7 +73,31 @@ class Validator:
 
         return errors
 
-    # async def check_refresh_token(self, refresh_token: RefreshToken)
+    async def check_refresh_token(
+        self,
+        refresh_token: RefreshToken,
+        force_raise: bool | None = None,
+        not_exists_raise: bool = False,
+    ) -> list[RefreshTokenRevoked | RefreshTokenNotExists]:
+        force_raise_ = await self._force_raise_digest(force_raise=force_raise)
+        errors = []
+
+        if not_exists_raise and refresh_token is None:
+            if force_raise_:
+                raise RefreshTokenNotExists()
+            errors.append(RefreshTokenNotExists)
+
+        if refresh_token.revoked_at:
+            if force_raise_:
+                raise RefreshTokenRevoked()
+            errors.append(RefreshTokenRevoked)
+
+        return errors
+
+    async def _force_raise_digest(self, force_raise: bool) -> bool:
+        if self.force_raise and force_raise or force_raise:
+            return True
+        return force_raise
 
 
 validator = Validator(
