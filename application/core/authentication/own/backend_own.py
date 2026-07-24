@@ -6,7 +6,6 @@ from fastapi_users.authentication import AuthenticationBackend
 
 if TYPE_CHECKING:
     from fastapi import Response
-    from fastapi_users import BaseUserManager
 
     from core.models.user import User
 
@@ -31,11 +30,9 @@ class AuthenticationBackendOwn(AuthenticationBackend):
         self,
         token: str,
         strategy: StrategyOwn,
-        user_manager: BaseUserManager,
     ) -> Response:
         response_dict = await strategy.reissue_token(
             token=token,
-            user_manager=user_manager,
         )
 
         if response_dict is None:

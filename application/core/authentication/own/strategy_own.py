@@ -19,11 +19,11 @@ from .exceptions_own import (
 
 if TYPE_CHECKING:
     from fastapi_users import BaseUserManager
+    from fastapi_users.db import SQLAlchemyUserDatabase
 
-    from core.models import AccessToken, RefreshToken, User, UserSession
+    from core.models import AccessToken, User
 
     from .access_token_own import SQLAlchemyAccessTokenDatabaseOwn
-    from .manager_own import BaseUserManagerOwn
     from .refresh_token_database import RefreshTokenDatabase
     from .user_session_database import UserSessionDatabase
 
@@ -31,11 +31,13 @@ if TYPE_CHECKING:
 class StrategyOwn(DatabaseStrategy):
     def __init__(
         self,
+        user_database: SQLAlchemyUserDatabase,
         user_session_database: UserSessionDatabase,
         database: SQLAlchemyAccessTokenDatabaseOwn,
         refresh_token_database: RefreshTokenDatabase,
         lifetime_seconds=None,
     ):
+        self.user_database = user_database
         self.user_session_database = user_session_database
         self.refresh_token_database = refresh_token_database
         super().__init__(database, lifetime_seconds)
@@ -97,14 +99,28 @@ class StrategyOwn(DatabaseStrategy):
 
         return access_token.token, raw_refresh_token
 
-    async def reissue_token(self, token: str, user_manager: BaseUserManagerOwn) -> tuple[str, str]:
+    async def reissue_token(self, token: str) -> tuple[str, str]:
         token_fingerprint = await self._hmac_digest(message=token)
 
-        refresh_token = await self.refresh_token_database.get_by_fingerprint(token_fingerprint)
+        errors = []
 
-        user = await user_manager.get(refresh_token.user_id)
+        refresh_token = await self.refresh_token_database.get_by_fingerprint(token_fingerprint)
+        if refresh_token is None:
+            return None
+
+        errors.extend(await validator.check_refresh_token(refresh_token=refresh_token) or [])
 
         user_session = await self.user_session_database.get(refresh_token.session_id)
+        errors.extend(await validator.check_user_session(user_session=user_session) or [])
+
+        user = await self.user_database.get(refresh_token.user_id)
+        errors.extend(await validator.check_user(user=user) or [])
+
+        if RefreshTokenRevoked in errors or exceptions.UserInactive in errors:
+            await self.user_session_database.revoke(user_session)
+
+        if errors:
+            return None
 
         return {
             "access_token": "ABBAB",
@@ -165,29 +181,3 @@ class StrategyOwn(DatabaseStrategy):
         )
 
         return hmac_.hexdigest()
-
-    async def _reissue_check(
-        self,
-        user: User,
-        user_manager: BaseUserManagerOwn,
-        user_session: UserSession,
-        refresh_token: RefreshToken,
-    ):
-        CHECK_FAILURE = False
-
-        try:
-            await self.refresh_token_database.check(refresh_token)
-        except RefreshTokenRevoked:
-            CHECK_FAILURE = True
-            # WARNING LOG
-            await self.user_session_database.revoke(
-                user_session=user_session,
-                force_revoke=False,
-            )
-
-        try:
-            await user_manager.check(user)
-        except exceptions.UserNotExists:
-            pass
-
-        await self.user_session_database.check(user_session)
