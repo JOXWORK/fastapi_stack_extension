@@ -43,7 +43,7 @@ class Validator:
         user_session: UserSession,
         force_raise: bool = False,
         not_exists_raise: bool = False,
-    ) -> list[UserSessionExpires | UserSessionRevoked | UserSessionNotExists]:
+    ) -> list[UserSessionExpires | UserSessionRevoked | UserSessionNotExists] | None:
         force_raise_ = await self._force_raise_digest(force_raise=force_raise)
         errors = []
 
@@ -73,6 +73,9 @@ class Validator:
                 raise UserSessionRevoked()
             errors.append(UserSessionRevoked)
 
+        if not errors:
+            return None
+
         return errors
 
     async def check_refresh_token(
@@ -80,7 +83,7 @@ class Validator:
         refresh_token: RefreshToken,
         force_raise: bool | None = None,
         not_exists_raise: bool = False,
-    ) -> list[RefreshTokenRevoked | RefreshTokenNotExists]:
+    ) -> list[RefreshTokenRevoked | RefreshTokenNotExists] | None:
         force_raise_ = await self._force_raise_digest(force_raise=force_raise)
         errors = []
 
@@ -94,6 +97,9 @@ class Validator:
                 raise RefreshTokenRevoked()
             errors.append(RefreshTokenRevoked)
 
+        if not errors:
+            return None
+
         return errors
 
     async def check_user(
@@ -101,7 +107,7 @@ class Validator:
         user: User,
         force_raise: bool | None = None,
         not_exists_raise: bool = False,
-    ) -> list[UserInactive | UserNotExists]:
+    ) -> list[UserInactive | UserNotExists] | None:
         force_raise_ = await self._force_raise_digest(force_raise=force_raise)
         errors = []
 
@@ -114,6 +120,9 @@ class Validator:
             if force_raise_:
                 raise UserInactive
             errors.append(UserInactive)
+
+        if not errors:
+            return None
 
         return errors
 
