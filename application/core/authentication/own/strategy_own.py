@@ -42,6 +42,8 @@ class StrategyOwn(DatabaseStrategy):
         self.refresh_token_database = refresh_token_database
         super().__init__(database, lifetime_seconds)
 
+        self.database: SQLAlchemyAccessTokenDatabaseOwn
+
     async def read_token(
         self,
         token: str | None,
@@ -80,7 +82,7 @@ class StrategyOwn(DatabaseStrategy):
 
         return access_token
 
-    async def write_token(self, user: User) -> tuple[str, str]:
+    async def write_token(self, user: User) -> tuple[str, str] | None:
         user_session = await self.user_session_database.create(user=user)
 
         access_token_dict = self._create_access_token_dict(
@@ -99,7 +101,7 @@ class StrategyOwn(DatabaseStrategy):
 
         return access_token.token, raw_refresh_token
 
-    async def reissue_token(self, token: str) -> tuple[str, str]:
+    async def reissue_token(self, token: str) -> dict[str, str, str, str] | None:
         token_fingerprint = await self._hmac_digest(message=token)
 
         errors = []
@@ -122,9 +124,30 @@ class StrategyOwn(DatabaseStrategy):
         if errors:
             return None
 
+        access_token = await self.database.get_by_user_session_id(user_session.id)
+        if access_token is None:
+            return None
+
+        await self.database.delete(access_token)
+        await self.refresh_token_database.revoke(refresh_token)
+
+        access_token_dict = self._create_access_token_dict(
+            user=user,
+            user_session_id=user_session.id,
+        )
+
+        refresh_token_dict = await self._create_refresh_token_dict(
+            user=user,
+            user_session_id=user_session.id,
+        )
+        raw_refresh_token = refresh_token_dict.pop("refresh_token")
+
+        access_token = await self.database.create(access_token_dict)
+        refresh_token = await self.refresh_token_database.create(refresh_token_dict)  # noqa: F841
+
         return {
-            "access_token": "ABBAB",
-            "refresh_token": "ABBAB",
+            "access_token": access_token.token,
+            "refresh_token": raw_refresh_token,
         }
 
     async def destroy_token(self, token: str, user: User, *, session_destroy: bool = False) -> None:
