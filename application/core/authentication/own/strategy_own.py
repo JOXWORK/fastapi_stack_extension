@@ -72,17 +72,6 @@ class StrategyOwn(DatabaseStrategy):
         except (exceptions.UserNotExists, exceptions.InvalidID, UserSessionInvalid):
             return None
 
-    async def read_token_ignore_expire(self, token: str | None) -> AccessToken:
-        if token is None:
-            return None
-
-        access_token = await self.database.get_token_ignore_expire(token=token)
-
-        if access_token is None:
-            return None
-
-        return access_token
-
     async def write_token(self, user: User) -> tuple[str, str] | None:
         user_session = await self.user_session_database.create(user=user)
 
