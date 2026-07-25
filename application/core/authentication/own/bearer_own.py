@@ -24,12 +24,19 @@ class BearerTransportOwn(BearerTransport):
         super().__init__(tokenUrl)
 
     async def get_login_response(self, access_token: str, refresh_token: str) -> Response:
-        bearer_response = BearerResponse(
+        bearer_response = await self._token_pair_response(access_token=access_token, refresh_token=refresh_token)
+        return JSONResponse(bearer_response.model_dump())
+
+    async def get_reissue_response(self, access_token: str, refresh_token: str) -> Response:
+        bearer_response = await self._token_pair_response(access_token=access_token, refresh_token=refresh_token)
+        return JSONResponse(bearer_response.model_dump())
+
+    async def _token_pair_response(self, access_token: str, refresh_token: str, token_type: str = "bearer") -> BearerResponse:
+        return BearerResponse(
             access_token=access_token,
             refresh_token=refresh_token,
-            token_type="bearer",
+            token_type=token_type,
         )
-        return JSONResponse(bearer_response.model_dump())
 
     @staticmethod
     def get_openapi_login_responses_success() -> OpenAPIResponseType:
