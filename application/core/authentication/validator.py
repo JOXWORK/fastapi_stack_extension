@@ -113,12 +113,12 @@ class Validator:
 
         if not_exists_raise and user is None:
             if force_raise_:
-                raise UserNotExists
+                raise UserNotExists()
             errors.append(UserNotExists)
 
         if not user.is_active:
             if force_raise_:
-                raise UserInactive
+                raise UserInactive()
             errors.append(UserInactive)
 
         if not errors:
