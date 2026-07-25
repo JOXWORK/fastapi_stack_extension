@@ -38,4 +38,4 @@ class AuthenticationBackendOwn(AuthenticationBackend):
         if response_dict is None:
             return None
 
-        return await self.transport.get_login_response(**response_dict)
+        return await self.transport.get_reissue_response(**response_dict)
