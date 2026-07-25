@@ -10,8 +10,6 @@ if TYPE_CHECKING:
 
 from core.models.refresh_token import RefreshToken
 
-from .exceptions_own import RefreshTokenRevoked
-
 
 class RefreshTokenDatabase:
     def __init__(self, session: AsyncSession):
@@ -30,10 +28,6 @@ class RefreshTokenDatabase:
         result = await self.session.execute(query)
 
         return result.scalar_one_or_none()
-
-    async def check(self, refresh_token: RefreshToken) -> None:
-        if refresh_token.revoked_at:
-            raise RefreshTokenRevoked()
 
     async def revoke(self, refresh_token: RefreshToken) -> None:
         refresh_token.revoked_at = now_utc()

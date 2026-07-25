@@ -7,7 +7,6 @@ if TYPE_CHECKING:
 
     from core.models.user import User
 
-from fastapi_users import exceptions
 from fastapi_users.db import SQLAlchemyUserDatabase
 
 
@@ -23,7 +22,3 @@ class SQLAlchemyUserDatabaseOwn(SQLAlchemyUserDatabase):
             user_table=user_table,
             oauth_account_table=oauth_account_table,
         )
-
-    async def check(self, user: User) -> None:
-        if not user.is_active:
-            raise exceptions.UserInactive()
