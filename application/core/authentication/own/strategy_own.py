@@ -16,12 +16,13 @@ from .exceptions_own import (
     RefreshTokenRevoked,
     UserSessionInvalid,
 )
+from .refresh_token_wrapper import RefreshTokenWrapper
 
 if TYPE_CHECKING:
     from fastapi_users import BaseUserManager
     from fastapi_users.db import SQLAlchemyUserDatabase
 
-    from core.models import AccessToken, User
+    from core.models import AccessToken, User, UserSession
 
     from .access_token_own import SQLAlchemyAccessTokenDatabaseOwn
     from .refresh_token_database import RefreshTokenDatabase
@@ -85,21 +86,9 @@ class StrategyOwn(DatabaseStrategy):
     async def write_token(self, user: User) -> tuple[str, str] | None:
         user_session = await self.user_session_database.create(user=user)
 
-        access_token_dict = self._create_access_token_dict(
-            user=user,
-            user_session_id=user_session.id,
-        )
+        access_token, refresh_token_wrap = await self._create_token_pair(user=user, user_session=user_session)
 
-        refresh_token_dict = await self._create_refresh_token_dict(
-            user=user,
-            user_session_id=user_session.id,
-        )
-        raw_refresh_token = refresh_token_dict.pop("refresh_token")
-
-        access_token = await self.database.create(access_token_dict)
-        refresh_token = await self.refresh_token_database.create(refresh_token_dict)  # noqa: F841
-
-        return access_token.token, raw_refresh_token
+        return access_token.token, refresh_token_wrap.token
 
     async def reissue_token(self, token: str) -> dict[str, str, str, str] | None:
         token_fingerprint = await self._hmac_digest(message=token)
@@ -131,23 +120,11 @@ class StrategyOwn(DatabaseStrategy):
         await self.database.delete(access_token)
         await self.refresh_token_database.revoke(refresh_token)
 
-        access_token_dict = self._create_access_token_dict(
-            user=user,
-            user_session_id=user_session.id,
-        )
-
-        refresh_token_dict = await self._create_refresh_token_dict(
-            user=user,
-            user_session_id=user_session.id,
-        )
-        raw_refresh_token = refresh_token_dict.pop("refresh_token")
-
-        access_token = await self.database.create(access_token_dict)
-        refresh_token = await self.refresh_token_database.create(refresh_token_dict)  # noqa: F841
+        access_token, refresh_token_wrap = await self._create_token_pair(user=user, user_session=user_session)
 
         return {
             "access_token": access_token.token,
-            "refresh_token": raw_refresh_token,
+            "refresh_token": refresh_token_wrap.token,
         }
 
     async def destroy_token(self, token: str, user: User, *, session_destroy: bool = False) -> None:
@@ -190,6 +167,25 @@ class StrategyOwn(DatabaseStrategy):
             "session_id": user_session_id,
             "user_id": user.id,
         }
+
+    async def _create_token_pair(self, user: User, user_session: UserSession) -> tuple[AccessToken, RefreshTokenWrapper]:
+        access_token_dict = self._create_access_token_dict(
+            user=user,
+            user_session_id=user_session.id,
+        )
+
+        refresh_token_dict = await self._create_refresh_token_dict(
+            user=user,
+            user_session_id=user_session.id,
+        )
+        raw_refresh_token = refresh_token_dict.pop("refresh_token")
+
+        access_token = await self.database.create(access_token_dict)
+        refresh_token = await self.refresh_token_database.create(refresh_token_dict)  # noqa: F841
+
+        refresh_token_wrap = RefreshTokenWrapper(model=refresh_token, token=raw_refresh_token)
+
+        return access_token, refresh_token_wrap
 
     async def _hmac_digest(
         self,
