@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 from core.models.refresh_token import RefreshToken
 
 
-class RefreshTokenDatabase:
+class SQLAlchemyRefreshTokenDatabase:
     def __init__(self, session: AsyncSession):
         self.session = session
 

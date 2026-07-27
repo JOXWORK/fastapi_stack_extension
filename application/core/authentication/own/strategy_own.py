@@ -24,17 +24,17 @@ if TYPE_CHECKING:
     from core.models import AccessToken, RefreshToken, User, UserSession
 
     from .access_token_own import SQLAlchemyAccessTokenDatabaseOwn
-    from .refresh_token_database import RefreshTokenDatabase
-    from .user_session_database import UserSessionDatabase
+    from .refresh_token_database import SQLAlchemyRefreshTokenDatabase
+    from .user_session_database import SQLAlchemyUserSessionDatabase
 
 
 class StrategyOwn(DatabaseStrategy):
     def __init__(
         self,
         user_database: SQLAlchemyUserDatabase,
-        user_session_database: UserSessionDatabase,
+        user_session_database: SQLAlchemyUserSessionDatabase,
         database: SQLAlchemyAccessTokenDatabaseOwn,
-        refresh_token_database: RefreshTokenDatabase,
+        refresh_token_database: SQLAlchemyRefreshTokenDatabase,
         lifetime_seconds=None,
     ):
         self.user_database = user_database

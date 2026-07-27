@@ -12,15 +12,19 @@ from .get_user_db import get_user_db
 from .get_user_session_db import get_user_session_db
 
 if TYPE_CHECKING:
-    from core.authentication.own import RefreshTokenDatabase, SQLAlchemyAccessTokenDatabaseOwn, UserSessionDatabase
+    from core.authentication.own import (
+        SQLAlchemyAccessTokenDatabaseOwn,
+        SQLAlchemyRefreshTokenDatabase,
+        SQLAlchemyUserSessionDatabase,
+    )
     from fastapi_users.db import SQLAlchemyUserDatabase
 
 
 async def get_database_strategy(
     user_database: SQLAlchemyUserDatabase = Depends(get_user_db),
-    user_session_database: UserSessionDatabase = Depends(get_user_session_db),
+    user_session_database: SQLAlchemyUserSessionDatabase = Depends(get_user_session_db),
     access_token_db: SQLAlchemyAccessTokenDatabaseOwn = Depends(get_access_token_db),
-    refresh_token_db: RefreshTokenDatabase = Depends(get_refresh_token_db),
+    refresh_token_db: SQLAlchemyRefreshTokenDatabase = Depends(get_refresh_token_db),
 ) -> StrategyOwn:
     return StrategyOwn(
         user_database=user_database,

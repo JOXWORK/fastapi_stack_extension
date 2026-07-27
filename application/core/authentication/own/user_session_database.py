@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 from core.models.user_session import UserSession
 
 
-class UserSessionDatabase:
+class SQLAlchemyUserSessionDatabase:
     def __init__(
         self,
         session: AsyncSession,

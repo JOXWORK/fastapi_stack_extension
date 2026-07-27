@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from core.authentication.own import RefreshTokenDatabase
+from core.authentication.own import SQLAlchemyRefreshTokenDatabase
 from core.models import db_attach
 from fastapi import Depends
 
@@ -11,4 +11,4 @@ if TYPE_CHECKING:
 
 
 async def get_refresh_token_db(session: AsyncSession = Depends(db_attach.new_session)):
-    yield RefreshTokenDatabase(session=session)
+    yield SQLAlchemyRefreshTokenDatabase(session=session)
