@@ -128,11 +128,6 @@ class HTTPBearerSchemeSettings(BaseModel):
     auto_error: bool = False
 
 
-class SecureSchemes(BaseModel):
-    oauth2_scheme: OAuth2PasswordBearerSchemeSettings = OAuth2PasswordBearerSchemeSettings()
-    http_scheme: HTTPBearerSchemeSettings = HTTPBearerSchemeSettings()
-
-
 class Settings(BaseSettings):
     ROOT_DIR: Path = ROOT_DIR
 
@@ -158,8 +153,6 @@ class Settings(BaseSettings):
     taskiq: TaskiqConfig = TaskiqConfig()
 
     auth: AuthSettings
-
-    secure_schemes: SecureSchemes = SecureSchemes()
 
 
 ## Допустимо передовать в env_file кортеж из нескольких .env файлов, перегружающих друг друга и значения конфига.
