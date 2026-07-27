@@ -20,11 +20,6 @@ class SQLAlchemyAccessTokenDatabaseOwn(
         self.session: AsyncSession
         self.access_token_table: AccessToken
 
-    async def get_token_ignore_expire(self, token: str) -> AccessToken | None:
-        query = select(self.access_token_table).where(self.access_token_table.token == token)
-        result = await self.session.execute(query)
-        return result.scalar_one_or_none()
-
     async def get_by_user_session_id(self, session_id: int) -> AccessToken | None:
         query = select(self.access_token_table).where(self.access_token_table.session_id == session_id)
         result = await self.session.execute(query)
