@@ -1,3 +1,5 @@
+# ruff: noqa: F401, I001
+
 from core.config import settings
 from fastapi import APIRouter
 

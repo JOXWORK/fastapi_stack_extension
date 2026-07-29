@@ -1,3 +1,5 @@
+# ruff: noqa: F401, I001
+
 from .backend import auth_backend
 from .fastapi_users_instance import fastapi_current_superuser, fastapi_current_user
 from .get_database_strategy import get_database_strategy
