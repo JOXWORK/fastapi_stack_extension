@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from core.models import User, db_attach
+from core.models import db_attach
+from core.models.user import User
 from fastapi import Depends
 from fastapi_users.db import SQLAlchemyUserDatabase
 

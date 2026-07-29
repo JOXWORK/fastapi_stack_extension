@@ -3,7 +3,8 @@ import contextlib
 
 from api.dependencies.auth import get_user_db, get_user_manager
 from core.authentication import UserManager
-from core.models import User, db_attach
+from core.models import db_attach
+from core.models.user import User
 from core.schemas.authentication import UserCreate
 from fastapi_users.exceptions import UserAlreadyExists
 

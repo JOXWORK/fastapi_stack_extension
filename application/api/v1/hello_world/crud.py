@@ -13,7 +13,7 @@ from string import ascii_letters, digits
 from typing import TYPE_CHECKING
 
 import httpx
-from core.models import Example
+from core.models.example import Example
 from core.tasks import for_loop_task_example_task
 
 if TYPE_CHECKING:

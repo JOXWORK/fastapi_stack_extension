@@ -21,7 +21,10 @@ if TYPE_CHECKING:
     from fastapi_users import BaseUserManager
     from fastapi_users.db import SQLAlchemyUserDatabase
 
-    from core.models import AccessToken, RefreshToken, User, UserSession
+    from core.models.access_token import AccessToken
+    from core.models.refresh_token import RefreshToken
+    from core.models.user import User
+    from core.models.user_session import UserSession
 
     from .access_token_own import SQLAlchemyAccessTokenDatabaseOwn
     from .refresh_token_database import SQLAlchemyRefreshTokenDatabase

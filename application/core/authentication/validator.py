@@ -6,7 +6,9 @@ from typing import TYPE_CHECKING
 from fastapi_users_db_sqlalchemy.generics import now_utc
 
 if TYPE_CHECKING:
-    from core.models import RefreshToken, User, UserSession
+    from core.models.refresh_token import RefreshToken
+    from core.models.user import User
+    from core.models.user_session import UserSession
 
 from fastapi_users.exceptions import UserInactive, UserNotExists
 

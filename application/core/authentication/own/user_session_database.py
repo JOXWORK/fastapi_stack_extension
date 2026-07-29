@@ -7,7 +7,7 @@ from fastapi_users_db_sqlalchemy.generics import now_utc
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
-    from core.models import User
+    from core.models.user import User
 
 
 from core.models.user_session import UserSession

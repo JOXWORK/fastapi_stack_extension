@@ -3,7 +3,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from core.authentication.own import SQLAlchemyAccessTokenDatabaseOwn
-from core.models import AccessToken, db_attach
+from core.models import db_attach
+from core.models.access_token import AccessToken
 from fastapi import Depends
 
 if TYPE_CHECKING:

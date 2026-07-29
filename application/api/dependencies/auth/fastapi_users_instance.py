@@ -1,4 +1,4 @@
-from core.models import User
+from core.models.user import User
 from core.types_own.user_id import UserIdType
 from fastapi_users import FastAPIUsers
 
