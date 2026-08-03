@@ -95,7 +95,7 @@ class StrategyOwn(DatabaseStrategy):
 
         user_session = await self.user_session_database.get(refresh_token.session_id)
         await self.user_session_database.reissue_count_tick(user_session)
-        errors.extend(await validator.check_user_session(user_session=user_session, reissue_check=True) or [])
+        errors.extend(await validator.check_user_session(user_session=user_session) or [])
 
         user = await self.user_database.get(refresh_token.user_id)
         errors.extend(await validator.check_user(user=user) or [])
