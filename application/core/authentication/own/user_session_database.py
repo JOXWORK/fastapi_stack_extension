@@ -41,6 +41,10 @@ class SQLAlchemyUserSessionDatabase:
     async def get(self, user_session_id: int) -> UserSession | None:
         return await self.session.get(UserSession, user_session_id)
 
+    async def reissue_count_tick(self, user_session: UserSession) -> None:
+        user_session.reissue_count += 1
+        await self.session.commit()
+
     async def revoke(self, user_session: UserSession, force_revoke: bool = False) -> None:
         if not user_session.revoked_at or force_revoke:
             user_session.revoked_at = now_utc()

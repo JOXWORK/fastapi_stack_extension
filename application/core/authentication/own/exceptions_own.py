@@ -17,6 +17,10 @@ class UserSessionExpires(UserSessionInvalid):
     pass
 
 
+class UserSessionMaxReissueAmount(UserSessionInvalid):
+    pass
+
+
 class RefreshTokenRevoked(FastAPIUsersException):
     pass
 

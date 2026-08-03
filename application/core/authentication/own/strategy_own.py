@@ -15,6 +15,7 @@ from core.config import settings
 from .exceptions_own import (
     RefreshTokenRevoked,
     UserSessionInvalid,
+    UserSessionMaxReissueAmount,
 )
 
 if TYPE_CHECKING:
@@ -93,12 +94,13 @@ class StrategyOwn(DatabaseStrategy):
         errors.extend(await validator.check_refresh_token(refresh_token=refresh_token) or [])
 
         user_session = await self.user_session_database.get(refresh_token.session_id)
-        errors.extend(await validator.check_user_session(user_session=user_session) or [])
+        await self.user_session_database.reissue_count_tick(user_session)
+        errors.extend(await validator.check_user_session(user_session=user_session, reissue_check=True) or [])
 
         user = await self.user_database.get(refresh_token.user_id)
         errors.extend(await validator.check_user(user=user) or [])
 
-        if RefreshTokenRevoked in errors or exceptions.UserInactive in errors:
+        if RefreshTokenRevoked in errors or exceptions.UserInactive in errors or UserSessionMaxReissueAmount in errors:
             await self.user_session_database.revoke(user_session)
 
         if errors:

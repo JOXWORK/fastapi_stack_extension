@@ -18,6 +18,7 @@ from .own.exceptions_own import (
     RefreshTokenNotExists,
     RefreshTokenRevoked,
     UserSessionExpires,
+    UserSessionMaxReissueAmount,
     UserSessionNotExists,
     UserSessionRevoked,
 )
@@ -32,6 +33,7 @@ class Validator:
         lifetime_hours: float = 0,
         lifetime_days: float = 0,
         lifetime_weeks: float = 0,
+        reissue_max_amount: int = 0,
     ):
         self.force_raise = force_raise
         self.lifetime_seconds = lifetime_seconds
@@ -39,6 +41,7 @@ class Validator:
         self.lifetime_hours = lifetime_hours
         self.lifetime_days = lifetime_days
         self.lifetime_weeks = lifetime_weeks
+        self.reissue_max_amount = reissue_max_amount
 
     async def check_user_session(
         self,
@@ -53,6 +56,11 @@ class Validator:
             if force_raise_:
                 raise UserSessionNotExists()
             errors.append(UserSessionNotExists)
+
+        if user_session.reissue_count >= self.reissue_max_amount:
+            if force_raise_:
+                raise UserSessionMaxReissueAmount()
+            errors.append(UserSessionMaxReissueAmount)
 
         if not hasattr(user_session, "expires_at"):
             user_session_expires_at = user_session.created_at + timedelta(
@@ -139,4 +147,5 @@ validator = Validator(
     lifetime_minutes=settings.auth.user_session.lifetime_minutes,
     lifetime_hours=settings.auth.user_session.lifetime_hours,
     lifetime_days=settings.auth.user_session.lifetime_days,
+    reissue_max_amount=settings.auth.user_session.reissue_max_amount,
 )

@@ -108,6 +108,7 @@ class UserSession(BaseModel):
     lifetime_minutes: float = 0
     lifetime_hours: float = 0
     lifetime_days: float = 7
+    reissue_max_amount: int = 51  # strict: x == reissue_max_amount -> error
 
 
 class RefreshToken(BaseModel):
