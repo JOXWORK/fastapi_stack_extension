@@ -2,9 +2,21 @@ from secrets import token_hex
 
 mixin = token_hex(8)
 
+username = f"test_{mixin}@e.com"
+password = "qwerty"
+
 credentials = {
-    "username": f"test_{mixin}@e.com",
-    "password": "qwerty",
+    "register": {
+        "email": username,
+        "password": password,
+        "is_active": True,
+        "is_superuser": False,
+        "is_verified": False,
+    },
+    "login": {
+        "username": username,
+        "password": password,
+    },
 }
 
 user_credentials = {
