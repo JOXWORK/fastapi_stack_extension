@@ -10,8 +10,8 @@ credentials = {
         "email": username,
         "password": password,
         "is_active": True,
-        "is_superuser": False,
-        "is_verified": False,
+        "is_superuser": True,
+        "is_verified": True,
     },
     "login": {
         "username": username,
